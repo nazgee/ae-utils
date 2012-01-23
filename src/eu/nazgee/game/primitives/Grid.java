@@ -45,7 +45,6 @@ public class Grid extends RectangularShape {
 	// ===========================================================
 
 	private static final float LINEWIDTH_DEFAULT = 1.0f;
-	private static final int SEGMENTS_DEFAULT = 50;
 
 	public static final int VERTEX_INDEX_X = 0;
 	public static final int VERTEX_INDEX_Y = Grid.VERTEX_INDEX_X + 1;

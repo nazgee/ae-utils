@@ -1,6 +1,7 @@
 package eu.nazgee.game.ui.activity;
 
 import org.andengine.entity.IEntity;
+import org.andengine.extension.physics.box2d.PhysicsConnector;
 import org.andengine.extension.physics.box2d.util.Vector2Pool;
 import org.andengine.ui.activity.SimpleBaseGameActivity;
 
@@ -8,13 +9,14 @@ import android.util.FloatMath;
 
 import com.badlogic.gdx.math.Vector2;
 
+import eu.nazgee.game.physics.ITrack;
 import eu.nazgee.game.scene.ScenePhysics;
 import eu.nazgee.game.utils.UtilsMath;
 
 abstract public class ActivityPhysics extends SimpleBaseGameActivity {
 
 	private ScenePhysics mSceneMain;
-	private IEntity mGravitationEntity;
+	private ITrack mGravityTrack;
 	private Vector2 mGravityVector;
 	
 	public ActivityPhysics() {
@@ -30,28 +32,34 @@ abstract public class ActivityPhysics extends SimpleBaseGameActivity {
 		return mSceneMain;
 	}
 
-	public IEntity getGravitationEntity() {
-		return mGravitationEntity;
+	public ITrack getGravityTrack() {
+		return mGravityTrack;
 	}
 
-	protected void setGravitationEntity(IEntity pGravitationEntity) {
-		this.mGravitationEntity = pGravitationEntity;
+	protected void setGravityTrack(ITrack pGravityTrack) {
+		this.mGravityTrack = pGravityTrack;
 	}
 
 	public Vector2 getGravity() {
 		return mGravityVector;
 	}
 
+	public void setGravity(Vector2 grav) {
+		setGravity(grav.x, grav.y);
+	}
+
 	public void setGravity(float pX, float pY) {
 		this.mGravityVector.set(pX, pY);
 		
 		if (mSceneMain != null) {
-			if (getGravitationEntity() == null) {
-				mSceneMain.getPhysics().setGravity(getGravity());
-			} else {
-				UtilsMath.vectorRotateDeg(getGravity(), getGravitationEntity().getRotation());
-				mSceneMain.getPhysics().setGravity(getGravity());
+			if (getGravityTrack() != null) {
+				// compensate gravitation vector the given gravity track
+				Vector2 track = getGravityTrack().getTrack();
+				float deg = UtilsMath.getAngleDeg(track);
+				UtilsMath.vectorRotateDeg(mGravityVector, deg + 90);
 			}
+
+			mSceneMain.getPhysics().setGravity(getGravity());
 		}
 	}
 }

@@ -20,7 +20,6 @@ public class Arrow extends Line {
 		Line h1 = new Line(0, 0, head.x, head.y);
 		UtilsMath.vectorRotateDeg(head, 300);
 		Line h2 = new Line(0, 0, head.x, head.y);
-
 		attachChild(h1);
 		attachChild(h2);
 	}
