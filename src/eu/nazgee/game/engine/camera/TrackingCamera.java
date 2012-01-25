@@ -3,6 +3,7 @@ package eu.nazgee.game.engine.camera;
 import org.andengine.engine.camera.Camera;
 import org.andengine.entity.IEntity;
 import org.andengine.extension.physics.box2d.PhysicsConnector;
+import org.andengine.extension.physics.box2d.util.Vector2Pool;
 
 import com.badlogic.gdx.math.Vector2;
 
@@ -30,21 +31,26 @@ public class TrackingCamera extends Camera {
 
 	@Override
 	public void updateChaseEntity() {
-		super.updateChaseEntity();
-		
 		if(mChaseBody != null) {
+			// update x-y position
+			super.updateChaseEntity();
+			
+			// update rotation
 			Vector2 track = mTrack.getTrack();
-			this.setRotation(mOffsetDeg - UtilsMath.getAngleDeg(track));
+			float deg = UtilsMath.getAngleDeg(track);
+			this.setRotation(mOffsetDeg - deg);
 		}
 	}
 
 	@Override
 	public void setCenter(float pCenterX, float pCenterY) {
+		// move given center in tracking direction by mOffsetLen
 		if(mChaseBody != null && (mOffsetLen != 0)) {
-			Vector2 track = mTrack.getTrack();
+			Vector2 track = Vector2Pool.obtain(mTrack.getTrack());
 			track.nor().mul(mOffsetLen);
 			pCenterX += track.x;
 			pCenterY += track.y;
+			Vector2Pool.recycle(track);
 		}		
 		super.setCenter(pCenterX, pCenterY);
 	}

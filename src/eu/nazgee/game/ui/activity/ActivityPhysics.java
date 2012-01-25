@@ -32,11 +32,11 @@ abstract public class ActivityPhysics extends SimpleBaseGameActivity {
 		return mSceneMain;
 	}
 
-	public ITrack getGravityTrack() {
+	public ITrack getGravityTranslationTrack() {
 		return mGravityTrack;
 	}
 
-	protected void setGravityTrack(ITrack pGravityTrack) {
+	protected void setGravityTranslationTrack(ITrack pGravityTrack) {
 		this.mGravityTrack = pGravityTrack;
 	}
 
@@ -52,9 +52,9 @@ abstract public class ActivityPhysics extends SimpleBaseGameActivity {
 		this.mGravityVector.set(pX, pY);
 		
 		if (mSceneMain != null) {
-			if (getGravityTrack() != null) {
+			if (getGravityTranslationTrack() != null) {
 				// compensate gravitation vector the given gravity track
-				Vector2 track = getGravityTrack().getTrack();
+				Vector2 track = getGravityTranslationTrack().getTrack();
 				float deg = UtilsMath.getAngleDeg(track);
 				UtilsMath.vectorRotateDeg(mGravityVector, deg + 90);
 			}
