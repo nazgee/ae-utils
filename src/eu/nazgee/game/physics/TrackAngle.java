@@ -11,25 +11,20 @@ import com.badlogic.gdx.math.Vector2;
 import eu.nazgee.game.utils.UtilsMath;
 
 public class TrackAngle implements ITrack {
-	
+
 	private Vector2 mVec;  
 	private PhysicsConnector mBody; 
-	
+
 	public TrackAngle(PhysicsConnector pBody) {
 		mBody = pBody;
 		mVec = new Vector2(1,0);
 	}
-	
+
 	@Override
 	public Vector2 getTrack() {
 		mVec.set(1, 0);
 		float deg = mBody.getShape().getRotation();
 		UtilsMath.vectorRotateDeg(mVec, deg);
-		
-//		float res = UtilsMath.getAngleDeg(mVec);
-//		if(Math.abs(deg-res) > 10f)
-//			throw new RuntimeException("oops! deg=" + deg + "res=" + res + "vec=" + mVec);
-		
 		return mVec;
 	}
 }
