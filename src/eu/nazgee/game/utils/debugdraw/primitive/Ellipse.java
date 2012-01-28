@@ -7,6 +7,7 @@ import org.andengine.opengl.shader.util.constants.ShaderProgramConstants;
 import org.andengine.opengl.util.GLState;
 import org.andengine.opengl.vbo.HighPerformanceVertexBufferObject;
 import org.andengine.opengl.vbo.IVertexBufferObject;
+import org.andengine.opengl.vbo.VertexBufferObjectManager;
 import org.andengine.opengl.vbo.VertexBufferObject.DrawType;
 import org.andengine.opengl.vbo.attribute.VertexBufferObjectAttributes;
 import org.andengine.opengl.vbo.attribute.VertexBufferObjectAttributesBuilder;
@@ -64,33 +65,34 @@ public class Ellipse extends RectangularShape {
 	// Constructors
 	// ===========================================================
 	
-	public Ellipse(float pX, float pY, float radius) {
-		this(pX, pY, radius, radius, LINEWIDTH_DEFAULT, SEGMENTS_DEFAULT, null);
+	public Ellipse(float pX, float pY, float radius, final VertexBufferObjectManager pVertexBufferObjectManager) {
+		this(pX, pY, radius, radius, LINEWIDTH_DEFAULT, SEGMENTS_DEFAULT, null, pVertexBufferObjectManager);
 	}
 	
-	public Ellipse(float pX, float pY, float radius, Color pCentroidColor) {
-		this(pX, pY, radius, radius, LINEWIDTH_DEFAULT, SEGMENTS_DEFAULT, pCentroidColor);
+	public Ellipse(float pX, float pY, float radius, Color pCentroidColor, final VertexBufferObjectManager pVertexBufferObjectManager) {
+		this(pX, pY, radius, radius, LINEWIDTH_DEFAULT, SEGMENTS_DEFAULT, pCentroidColor, pVertexBufferObjectManager);
 	}
 	
-	public Ellipse(float pX, float pY, float radiusX, float radiusY) {
-		this(pX, pY, radiusX, radiusY, LINEWIDTH_DEFAULT, SEGMENTS_DEFAULT, null);
+	public Ellipse(float pX, float pY, float radiusX, float radiusY, final VertexBufferObjectManager pVertexBufferObjectManager) {
+		this(pX, pY, radiusX, radiusY, LINEWIDTH_DEFAULT, SEGMENTS_DEFAULT, null, pVertexBufferObjectManager);
 	}
 	
-	public Ellipse(float pX, float pY, float radiusX, float radiusY, final float pLineWidth) {
-		this(pX, pY, radiusX, radiusY, pLineWidth, SEGMENTS_DEFAULT, null);
+	public Ellipse(float pX, float pY, float radiusX, float radiusY, final float pLineWidth, final VertexBufferObjectManager pVertexBufferObjectManager) {
+		this(pX, pY, radiusX, radiusY, pLineWidth, SEGMENTS_DEFAULT, null, pVertexBufferObjectManager);
 	}
 	
-	public Ellipse(float pX, float pY, float radius, final float pLineWidth, Color pCentroidColor) {
-		this(pX, pY, radius, radius, pLineWidth, SEGMENTS_DEFAULT, pCentroidColor);
+	public Ellipse(float pX, float pY, float radius, final float pLineWidth, Color pCentroidColor, final VertexBufferObjectManager pVertexBufferObjectManager) {
+		this(pX, pY, radius, radius, pLineWidth, SEGMENTS_DEFAULT, pCentroidColor, pVertexBufferObjectManager);
 	}
 	
-	public Ellipse(float pX, float pY, float radiusX, float radiusY, final float pLineWidth, Color pCentroidColor) {
-		this(pX, pY, radiusX, radiusY, pLineWidth, SEGMENTS_DEFAULT, pCentroidColor);
+	public Ellipse(float pX, float pY, float radiusX, float radiusY, final float pLineWidth, Color pCentroidColor, final VertexBufferObjectManager pVertexBufferObjectManager) {
+		this(pX, pY, radiusX, radiusY, pLineWidth, SEGMENTS_DEFAULT, pCentroidColor, pVertexBufferObjectManager);
 	}
 	
 	private Ellipse(float pX, float pY, float pRadiusX, float pRadiusY,
 			float pLineWidth, int pSegments,
-			Color pCentroidColor) {
+			Color pCentroidColor,
+			final VertexBufferObjectManager pVertexBufferObjectManager) {
 		super(0, 0, 2*pRadiusX, 2*pRadiusY, PositionColorShaderProgram.getInstance());
 		this.mRadiusX = pRadiusX;
 		this.mRadiusY = pRadiusY;
@@ -109,7 +111,7 @@ public class Ellipse extends RectangularShape {
 		mTotalVerticesNumber =  mDataVerticesNumber + (mMarkCentroid ? 2 : 0);
 		mEllipseSize = VERTEX_SIZE * mTotalVerticesNumber;
 		
-		this.mEllipseVertexBufferObject = new HighPerformanceEllipseVertexBufferObject(mEllipseSize, DrawType.STATIC, true, Ellipse.VERTEXBUFFEROBJECTATTRIBUTES_DEFAULT);
+		this.mEllipseVertexBufferObject = new HighPerformanceEllipseVertexBufferObject(pVertexBufferObjectManager, mEllipseSize, DrawType.STATIC, true, Ellipse.VERTEXBUFFEROBJECTATTRIBUTES_DEFAULT);
 
 		this.mRotationCenterX = pX;
 		this.mRotationCenterY = pX;
@@ -198,10 +200,11 @@ public class Ellipse extends RectangularShape {
 	public static class HighPerformanceEllipseVertexBufferObject extends HighPerformanceVertexBufferObject implements IEllipseVertexBufferObject {
 		
 		public HighPerformanceEllipseVertexBufferObject(
+				final VertexBufferObjectManager pVertexBufferObjectManager,
 				final int vertices_in_poly,
 				DrawType pDrawType, boolean pManaged,
 				VertexBufferObjectAttributes pVertexBufferObjectAttributes) {
-			super(vertices_in_poly, pDrawType, pManaged, pVertexBufferObjectAttributes);
+			super(pVertexBufferObjectManager, vertices_in_poly, pDrawType, pManaged, pVertexBufferObjectAttributes);
 		}
 		
 		// ===========================================================

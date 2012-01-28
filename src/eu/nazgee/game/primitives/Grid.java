@@ -7,6 +7,7 @@ import org.andengine.opengl.shader.util.constants.ShaderProgramConstants;
 import org.andengine.opengl.util.GLState;
 import org.andengine.opengl.vbo.HighPerformanceVertexBufferObject;
 import org.andengine.opengl.vbo.IVertexBufferObject;
+import org.andengine.opengl.vbo.VertexBufferObjectManager;
 import org.andengine.opengl.vbo.VertexBufferObject.DrawType;
 import org.andengine.opengl.vbo.attribute.VertexBufferObjectAttributes;
 import org.andengine.opengl.vbo.attribute.VertexBufferObjectAttributesBuilder;
@@ -14,30 +15,6 @@ import org.andengine.util.color.Color;
 
 import android.opengl.GLES20;
 import android.util.Log;
-
-
-//public class Grid extends Rectangle {
-//
-//	public Grid(float pX, float pY, float pWidth, float pHeight, float sizeX, float sizeY, Color pColor) {
-//		super(pX, pY, pWidth, pHeight);
-//		
-//		setColor(0, 0, 1, 0.0f);
-//		
-//		for (int i=0; i*sizeX <= pWidth; i++) {
-//			float x = i*sizeX;
-//			Line l = new Line(x, 0, x, pHeight);
-//			l.setColor(pColor);
-//			attachChild(l);
-//		}
-//		
-//		for (int i=0; i*sizeY <= pHeight; i++) {
-//			float y = i*sizeY;
-//			Line l = new Line(0, y, pWidth, y);
-//			l.setColor(pColor);
-//			attachChild(l);
-//		}
-//	}
-//}
 
 public class Grid extends RectangularShape {
 	// ===========================================================
@@ -79,11 +56,11 @@ public class Grid extends RectangularShape {
 	// ===========================================================
 	// Constructors
 	// ===========================================================
-	public Grid(float pX, float pY, float pWidth, float pHeight, float sizeX, float sizeY) {
-		this(pX, pY, pWidth, pHeight, sizeX, sizeY, LINEWIDTH_DEFAULT);
+	public Grid(float pX, float pY, float pWidth, float pHeight, float sizeX, float sizeY, final VertexBufferObjectManager pVertexBufferObjectManager) {
+		this(pX, pY, pWidth, pHeight, sizeX, sizeY, LINEWIDTH_DEFAULT, pVertexBufferObjectManager);
 	}
 	
-	public Grid(float pX, float pY, float pWidth, float pHeight, float sizeX, float sizeY, float pLineWidth) {
+	public Grid(float pX, float pY, float pWidth, float pHeight, float sizeX, float sizeY, float pLineWidth, final VertexBufferObjectManager pVertexBufferObjectManager) {
 		super(pX, pY, pWidth, pHeight, PositionColorShaderProgram.getInstance());
 		this.sizeX = sizeX;
 		this.sizeY = sizeY;
@@ -96,7 +73,7 @@ public class Grid extends RectangularShape {
 		
 		Log.e(LOGTAG, "v=" + mVerticesNumberVer + "; h=" + mVerticesNumberHor);
 		
-		this.mGridVertexBufferObject = new HighPerformanceGridVertexBufferObject(mGridSize, DrawType.STATIC, true, Grid.VERTEXBUFFEROBJECTATTRIBUTES_DEFAULT);
+		this.mGridVertexBufferObject = new HighPerformanceGridVertexBufferObject(pVertexBufferObjectManager, mGridSize, DrawType.STATIC, true, Grid.VERTEXBUFFEROBJECTATTRIBUTES_DEFAULT);
 			
 		this.onUpdateVertices();
 		this.onUpdateColor();
@@ -179,10 +156,11 @@ public class Grid extends RectangularShape {
 	public static class HighPerformanceGridVertexBufferObject extends HighPerformanceVertexBufferObject implements IGridVertexBufferObject {
 		
 		public HighPerformanceGridVertexBufferObject(
+				final VertexBufferObjectManager pVertexBufferObjectManager,
 				final int vertices_in_poly,
 				DrawType pDrawType, boolean pManaged,
 				VertexBufferObjectAttributes pVertexBufferObjectAttributes) {
-			super(vertices_in_poly, pDrawType, pManaged, pVertexBufferObjectAttributes);
+			super(pVertexBufferObjectManager, vertices_in_poly, pDrawType, pManaged, pVertexBufferObjectAttributes);
 		}
 		
 		// ===========================================================

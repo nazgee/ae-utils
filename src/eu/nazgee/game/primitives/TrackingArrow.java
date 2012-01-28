@@ -1,6 +1,7 @@
 package eu.nazgee.game.primitives;
 
 import org.andengine.engine.handler.IUpdateHandler;
+import org.andengine.opengl.vbo.VertexBufferObjectManager;
 
 import com.badlogic.gdx.math.Vector2;
 
@@ -13,8 +14,8 @@ public class TrackingArrow extends Arrow {
 	private ITrack mTracker;
 	static private final String LOGTAG = "TrackingArrow";
 
-	public TrackingArrow(float pX1, float pY1, float pX2, float pY2, ITrack pTracker) {
-		super(pX1, pY1, pX2, pY2);
+	public TrackingArrow(float pX1, float pY1, float pX2, float pY2, ITrack pTracker, final VertexBufferObjectManager pVertexBufferObjectManager) {
+		super(pX1, pY1, pX2, pY2, pVertexBufferObjectManager);
 		setTracker(pTracker);
 	}
 

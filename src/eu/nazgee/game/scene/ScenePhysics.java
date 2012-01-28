@@ -6,6 +6,7 @@ import org.andengine.entity.scene.CameraScene;
 import org.andengine.entity.scene.Scene;
 import org.andengine.extension.physics.box2d.PhysicsConnector;
 import org.andengine.extension.physics.box2d.PhysicsWorld;
+import org.andengine.opengl.vbo.VertexBufferObjectManager;
 import org.andengine.util.color.Color;
 
 import android.hardware.SensorManager;
@@ -125,9 +126,9 @@ public class ScenePhysics extends Scene implements ContactListener {
 	 * 							helpers
 	 *=======================================================================*/
 	
-	protected void attachDebugGrid(int pX, int pY, int pW, int pH, int pGridSize, float pSubgridDivisor, int zindex) {
+	protected void attachDebugGrid(int pX, int pY, int pW, int pH, int pGridSize, float pSubgridDivisor, int zindex, final VertexBufferObjectManager pVertexBufferObjectManager) {
 		detachDebugGrid();
-		mDebugGrid = new GridDouble(pX, pY, pW, pH, pGridSize, pGridSize, pSubgridDivisor, new Color(1, 1, 1, 0.5f), new Color(0, 0, 1, 0.4f));
+		mDebugGrid = new GridDouble(pX, pY, pW, pH, pGridSize, pGridSize, pSubgridDivisor, new Color(1, 1, 1, 0.5f), new Color(0, 0, 1, 0.4f), pVertexBufferObjectManager);
 		reattachDebugGrid();
 		sortChildren(false);
 	}

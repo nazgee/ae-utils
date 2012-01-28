@@ -10,6 +10,7 @@ import org.andengine.entity.Entity;
 import org.andengine.entity.shape.Shape;
 import org.andengine.extension.physics.box2d.PhysicsConnector;
 import org.andengine.extension.physics.box2d.PhysicsWorld;
+import org.andengine.opengl.vbo.VertexBufferObjectManager;
 import org.andengine.util.color.Color;
 
 import android.util.Log;
@@ -39,9 +40,12 @@ public class Box2dDebugRenderer extends Entity {
 	private Color sensorBodyColor = new Color(0.2f, 0.2f, 1);
 	private Color inactiveBodyColor = new Color(0.7f, 0.7f, 0.7f);
 	private Color centroidColor = new Color(1, 0, 1);
+	
+	final VertexBufferObjectManager mVertexBufferObjectManager;
 
-	public Box2dDebugRenderer(PhysicsWorld world) {
+	public Box2dDebugRenderer(PhysicsWorld world, final VertexBufferObjectManager pVertexBufferObjectManager) {
 		this.world = world;
+		mVertexBufferObjectManager = pVertexBufferObjectManager;
 	}
 
 	@Override
@@ -169,7 +173,7 @@ public class Box2dDebugRenderer extends Entity {
 		Vector2 position = fixtureShape.getPosition();
 		Ellipse ellipse = new Ellipse(position.x, position.y,
 				fixtureShape.getRadius()
-						* PhysicsConnector.PIXEL_TO_METER_RATIO_DEFAULT, centroidColor);
+						* PhysicsConnector.PIXEL_TO_METER_RATIO_DEFAULT, centroidColor, mVertexBufferObjectManager);
 		return ellipse;
 	}
 
@@ -190,7 +194,7 @@ public class Box2dDebugRenderer extends Entity {
 					* PhysicsConnector.PIXEL_TO_METER_RATIO_DEFAULT);
 		}
 
-		return new Polyline(xPoints, yPoints, centroidColor);
+		return new Polyline(xPoints, yPoints, centroidColor, mVertexBufferObjectManager);
 	}
 
 	public void setActiveBodyColor(int red, int green, int blue) {
