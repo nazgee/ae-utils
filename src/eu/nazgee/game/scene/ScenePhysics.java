@@ -23,26 +23,23 @@ import eu.nazgee.game.primitives.GridDouble;
 
 //public class ScenePhysics extends CameraScene implements ContactListener {
 public class ScenePhysics extends Scene implements ContactListener {
-	private HUD mHUD;
 	private Body mGroundBody;
 	private PhysicsWorld mPhysics;
 	private GridDouble mDebugGrid;
 	private final VertexBufferObjectManager mVertexBufferObjectManager;
 	
 	public ScenePhysics(final VertexBufferObjectManager pVertexBufferObjectManager) {
-		this(pVertexBufferObjectManager, null, new Vector2(0, SensorManager.GRAVITY_EARTH), false);
+		this(pVertexBufferObjectManager, new Vector2(0, SensorManager.GRAVITY_EARTH), false);
 	}
 
-	public ScenePhysics(final VertexBufferObjectManager pVertexBufferObjectManager, Camera pCamera, final Vector2 pGravity, final boolean pAllowSleep) {
+	public ScenePhysics(final VertexBufferObjectManager pVertexBufferObjectManager, final Vector2 pGravity, final boolean pAllowSleep) {
 		super();
 		mVertexBufferObjectManager = pVertexBufferObjectManager;
 		
-		mHUD = new HUD();
 		mPhysics = new PhysicsWorld(pGravity.mul(0.02f), pAllowSleep);
 		mGroundBody = mPhysics.createBody(new BodyDef());
 		
 		registerUpdateHandler(getPhysics());
-		pCamera.setHUD(mHUD);
 	}
 	
 	public Body getGroundBody() {
@@ -120,10 +117,6 @@ public class ScenePhysics extends Scene implements ContactListener {
 	/*=========================================================================
 	 * 							getters & setters
 	 *=======================================================================*/
-	
-	public HUD getHUD() {
-		return mHUD;
-	}
 	
 	public VertexBufferObjectManager getVertexBufferObjectManager() {
 		return mVertexBufferObjectManager;
