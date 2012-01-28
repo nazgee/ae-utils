@@ -27,14 +27,15 @@ public class ScenePhysics extends Scene implements ContactListener {
 	private Body mGroundBody;
 	private PhysicsWorld mPhysics;
 	private GridDouble mDebugGrid;
+	private final VertexBufferObjectManager mVertexBufferObjectManager;
 	
-	public ScenePhysics() {
-		this(null, new Vector2(0, SensorManager.GRAVITY_EARTH), false);
+	public ScenePhysics(final VertexBufferObjectManager pVertexBufferObjectManager) {
+		this(pVertexBufferObjectManager, null, new Vector2(0, SensorManager.GRAVITY_EARTH), false);
 	}
 
-	public ScenePhysics(Camera pCamera, final Vector2 pGravity, final boolean pAllowSleep) {
-//		super(pCamera);
+	public ScenePhysics(final VertexBufferObjectManager pVertexBufferObjectManager, Camera pCamera, final Vector2 pGravity, final boolean pAllowSleep) {
 		super();
+		mVertexBufferObjectManager = pVertexBufferObjectManager;
 		
 		mHUD = new HUD();
 		mPhysics = new PhysicsWorld(pGravity.mul(0.02f), pAllowSleep);
@@ -120,7 +121,13 @@ public class ScenePhysics extends Scene implements ContactListener {
 	 * 							getters & setters
 	 *=======================================================================*/
 	
-
+	public HUD getHUD() {
+		return mHUD;
+	}
+	
+	public VertexBufferObjectManager getVertexBufferObjectManager() {
+		return mVertexBufferObjectManager;
+	}
 	
 	/*=========================================================================
 	 * 							helpers
@@ -140,9 +147,5 @@ public class ScenePhysics extends Scene implements ContactListener {
 	protected void reattachDebugGrid() {
 		if (mDebugGrid != null)
 			attachChild(mDebugGrid); 
-	}
-
-	public HUD getHUD() {
-		return mHUD;
 	}
 }
