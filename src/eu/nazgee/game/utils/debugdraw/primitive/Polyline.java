@@ -60,6 +60,8 @@ public class Polyline extends RectangularShape {
 	protected boolean mMarkCentroid;
 	protected Color mCentroidColor;
 
+	private float mA;
+
 	// ===========================================================
 	// Constructors
 	// ===========================================================
@@ -96,15 +98,13 @@ public class Polyline extends RectangularShape {
 		
 		this.mPolygonVertexBufferObject = new HighPerformancePolygonVertexBufferObject(pVertexBufferObjectManager, mPolygonSize, DrawType.STATIC, true, Polyline.VERTEXBUFFEROBJECTATTRIBUTES_DEFAULT);
 
-		float A = centroidArea(pX, pY);
-		this.mRotationCenterX = centroidX(pX, pY, A);
-		this.mRotationCenterY = centroidY(pX, pY, A);
-		this.mScaleCenterX = this.mRotationCenterX;
-		this.mScaleCenterY = this.mRotationCenterY;
-				
+		mA = centroidArea(pX, pY);
+		resetScaleCenter();
+		resetRotationCenter();
+
 		this.onUpdateVertices();
 		this.onUpdateColor();
-		
+
 		this.setBlendingEnabled(true);
 	}
 
@@ -155,10 +155,29 @@ public class Polyline extends RectangularShape {
 	// ===========================================================
 	// Methods for/from SuperClass/Interfaces
 	// ===========================================================
+	
+	
+	
 
 	@Override
 	public IPolygonVertexBufferObject getVertexBufferObject() {
 		return this.mPolygonVertexBufferObject;
+	}
+
+	@Override
+	public void resetRotationCenter() {
+		if (mX==null || mY==null)
+			return;
+		this.mRotationCenterX = centroidX(mX, mY, mA);
+		this.mRotationCenterY = centroidY(mX, mY, mA);
+	}
+
+	@Override
+	public void resetScaleCenter() {
+		if (mX==null || mY==null)
+			return;
+		this.mScaleCenterX = centroidX(mX, mY, mA);
+		this.mScaleCenterY = centroidY(mX, mY, mA);
 	}
 
 	@Override
