@@ -166,18 +166,20 @@ public class Polyline extends RectangularShape {
 
 	@Override
 	public void resetRotationCenter() {
-		if (mX==null || mY==null)
-			return;
-		this.mRotationCenterX = centroidX(mX, mY, mA);
-		this.mRotationCenterY = centroidY(mX, mY, mA);
+		this.mRotationCenterX = getX();
+		this.mRotationCenterY = getY();
 	}
 
 	@Override
 	public void resetScaleCenter() {
-		if (mX==null || mY==null)
-			return;
-		this.mScaleCenterX = centroidX(mX, mY, mA);
-		this.mScaleCenterY = centroidY(mX, mY, mA);
+		this.mScaleCenterX = getX();
+		this.mScaleCenterY = getY();
+	}
+
+	@Override
+	public void resetSkewCenter() {
+		this.mSkewCenterX = getX();
+		this.mSkewCenterY = getY();
 	}
 
 	@Override

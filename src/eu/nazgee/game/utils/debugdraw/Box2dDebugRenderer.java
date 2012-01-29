@@ -181,20 +181,37 @@ public class Box2dDebugRenderer extends Entity {
 		PolygonShape fixtureShape = (PolygonShape) fixture.getShape();
 		if (fixtureShape == null)
 			return null;
-		ArrayList<Float> xPoints = new ArrayList<Float>();
-		ArrayList<Float> yPoints = new ArrayList<Float>();
-		Vector2 vertex = new Vector2();
-		
-		for (int i = 0; i < fixtureShape.getVertexCount(); i++) {
-			fixtureShape.getVertex(i, vertex);
-			Log.e("debugrenderrer", "vertex" + i + "/" + fixtureShape.getVertexCount() + "=(" + vertex.x + "," + vertex.y + ")");
-			xPoints.add(vertex.x
-					* PhysicsConnector.PIXEL_TO_METER_RATIO_DEFAULT);
-			yPoints.add(vertex.y
-					* PhysicsConnector.PIXEL_TO_METER_RATIO_DEFAULT);
+		if (fixtureShape.getVertexCount()<3) { 
+			ArrayList<Float> xPoints = new ArrayList<Float>();
+			ArrayList<Float> yPoints = new ArrayList<Float>();
+			Vector2 vertex = new Vector2();
+			
+			for (int i = 0; i < fixtureShape.getVertexCount(); i++) {
+				fixtureShape.getVertex(i, vertex);
+				Log.e("debugrenderrer", "vertex" + i + "/" + fixtureShape.getVertexCount() + "=(" + vertex.x + "," + vertex.y + ")");
+				xPoints.add(vertex.x
+						* PhysicsConnector.PIXEL_TO_METER_RATIO_DEFAULT);
+				yPoints.add(vertex.y
+						* PhysicsConnector.PIXEL_TO_METER_RATIO_DEFAULT);
+			}
+			return new Polyline(xPoints, yPoints, centroidColor, mVertexBufferObjectManager);
+		} else {
+			float[] xPoints = new float[fixtureShape.getVertexCount()];
+			float[] yPoints = new float[fixtureShape.getVertexCount()];
+			Vector2 vertex = new Vector2();
+			
+			for (int i = 0; i < fixtureShape.getVertexCount(); i++) {
+				fixtureShape.getVertex(i, vertex);
+				Log.e("debugrenderrer", "vertex" + i + "/" + fixtureShape.getVertexCount() + "=(" + vertex.x + "," + vertex.y + ")");
+				xPoints[i]=(vertex.x
+						* PhysicsConnector.PIXEL_TO_METER_RATIO_DEFAULT);
+				yPoints[i]=(vertex.y
+						* PhysicsConnector.PIXEL_TO_METER_RATIO_DEFAULT);
+			}
+			Shape poly = new org.andengine.entity.primitive.Polygon(0,0, xPoints, yPoints, mVertexBufferObjectManager);;
+			poly.setColor(centroidColor);
+			return poly;
 		}
-
-		return new Polyline(xPoints, yPoints, centroidColor, mVertexBufferObjectManager);
 	}
 
 	public void setActiveBodyColor(int red, int green, int blue) {
