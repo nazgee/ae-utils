@@ -2,6 +2,7 @@ package eu.nazgee.game.misc;
 
 import org.andengine.entity.modifier.IEntityModifier;
 import org.andengine.entity.modifier.MoveModifier;
+import org.andengine.extension.tmx.TMXTile;
 import org.andengine.extension.tmx.TMXTiledMap;
 import org.andengine.util.modifier.ease.IEaseFunction;
 import org.andengine.util.path.Path;
@@ -101,20 +102,11 @@ public class AStarPathModifierTime extends AStarPathModifier {
 	// ===========================================================
 	// Methods for/from SuperClass/Interfaces
 	// ===========================================================
-	
 	@Override
-	MoveModifier[] populateMoveMods() {
-		final MoveModifier[] moveModifiers = new MoveModifier[mPath.getLength() - 1];
-
-		final float velocity = mPathLengthInCoord / mDuration;
-
-		final int modifierCount = moveModifiers.length;
-		for (int i = 0; i < modifierCount; i++) {
-			final float duration = getSegmentLength(i) / velocity;
-			moveModifiers[i] = new MoveModifier(duration, getXCoordinates(i),
-					getXCoordinates(i + 1), getYCoordinates(i),
-					getYCoordinates(i + 1), null, mEaseFunction);
-		}
-		return moveModifiers;
+	MoveModifier populateMoveMod(final Path pPath, final TMXTile from, final TMXTile to, final float pParam, final float pLen, final IEaseFunction pEaseFunction) {
+		return new MoveModifier(pParam, 
+				from.getTileX(), to.getTileX(),
+				from.getTileY(), to.getTileY(), 
+				null, pEaseFunction);
 	}
 }

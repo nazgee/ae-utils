@@ -1,5 +1,6 @@
 package eu.nazgee.game.misc;
 
+import org.andengine.extension.tmx.TMXTile;
 import org.andengine.extension.tmx.TMXTiledMap;
 import org.andengine.entity.IEntity;
 import org.andengine.entity.modifier.EntityModifier;
@@ -26,16 +27,7 @@ abstract public class AStarPathModifier extends EntityModifier implements IAStar
 	protected final SequenceModifier<IEntity> mSequenceModifier;
 	protected IAStarPathModifierListener mPathModifierListener;
 	protected final Path mPath;
-
-	protected int mPathLengthInCoord;
-
-	protected final IEaseFunction mEaseFunction;
-
-	protected final float mDuration;
 	
-	private final int mTileW;
-	private final int mTileH;
-
 	// ===========================================================
 	// Constructors
 	// ===========================================================
@@ -96,11 +88,7 @@ abstract public class AStarPathModifier extends EntityModifier implements IAStar
 			final IAStarPathModifierListener pPathModifierListener,
 			final IEaseFunction pEaseFunction) throws IllegalArgumentException {
 		super(pEntityModiferListener);
-		mDuration = pDuration;
-		mEaseFunction = pEaseFunction;
-		mTileH = pMap.getTileHeight();
-		mTileW = pMap.getTileWidth();
-		
+
 		final int pathSize = pPath.getLength();
 
 		if (pathSize < 2) {
@@ -108,22 +96,10 @@ abstract public class AStarPathModifier extends EntityModifier implements IAStar
 					"Path needs at least 2 waypoints!");
 		}
 
-		mPathLengthInCoord = 0;
-
-		// Get the length of the path in coordinates
-		// XXX this does not account to diagonal movements!
-		for (int i = 1; i < pathSize; i++) {
-			if (pPath.getX(i) != pPath.getX(i - 1)) {
-				mPathLengthInCoord += mTileW;
-			} else {
-				mPathLengthInCoord += mTileH;
-			}
-		}
-
 		this.mPath = pPath;
 		this.mPathModifierListener = pPathModifierListener;
 
-		final MoveModifier[] moveModifiers = populateMoveMods();
+		final MoveModifier[] moveModifiers = populateMoveMods(pMap, pPath, pEaseFunction, pDuration);
 
 		/*
 		 * Create a new SequenceModifier and register the listeners that call
@@ -189,32 +165,49 @@ abstract public class AStarPathModifier extends EntityModifier implements IAStar
 					}
 				}, moveModifiers);
 	}
-	
-	abstract MoveModifier[] populateMoveMods();
-	
+
+	MoveModifier[] populateMoveMods(final TMXTiledMap pMap, final Path pPath, final IEaseFunction pEaseFunction, final float pParam) {
+		int len_y = pMap.getTileWidth();
+		int len_x = pMap.getTileHeight();
+		int len_diag = (int) Math.sqrt(len_y * len_y + len_x * len_x);
+		final MoveModifier[] moveModifiers = new MoveModifier[pPath.getLength() - 1];
+
+		TMXTile[][] tiles = pMap.getTMXLayers().get(0).getTMXTiles();
+
+		int x1;
+		int y1;
+		int x2 = pPath.getX(0);
+		int y2 = pPath.getY(0);
+		int len = 0;
+		for (int i = 1; i <= moveModifiers.length; i++) {
+			x1 = x2;
+			y1 = y2;
+			x2 = pPath.getX(i);
+			y2 = pPath.getY(i);
+
+			if (x1 == x2) {
+				len = len_y;
+			} else if (y1 == y2) {
+				len = len_x;
+			} else {
+				len = len_diag;
+			}
+
+			TMXTile from = tiles[y1][x1];
+			TMXTile to = tiles[y2][x2];
+
+			moveModifiers[i-1] = populateMoveMod(pPath, from, to, pParam, len, pEaseFunction);
+		}
+		return moveModifiers;
+	}
+
+	abstract MoveModifier populateMoveMod(final Path pPath, final TMXTile from, final TMXTile to, final float pParam, final float pLen, final IEaseFunction pEaseFunction);
+
 	@Override
 	public IEntityModifier deepCopy()
 			throws org.andengine.util.modifier.IModifier.DeepCopyNotSupportedException {
 
 		return null;
-	}
-
-	// FIXME get this from map- this is wrong, when map was moved somewhere
-	protected float getXCoordinates(int pIndex) {
-		return mPath.getX(pIndex) * mTileW;
-	}
-
-	// FIXME get this from map- this is wrong, when map was moved somewhere
-	protected float getYCoordinates(int pIndex) {
-		return mPath.getY(pIndex) * mTileH;
-	}
-
-	protected float getSegmentLength(int pIndex) {
-		final int nextSegmentIndex = pIndex + 1;
-		final float dx = getXCoordinates(pIndex) - getXCoordinates(nextSegmentIndex);
-		final float dy = getYCoordinates(pIndex) - getYCoordinates(nextSegmentIndex);
-		
-		return FloatMath.sqrt(dx * dx + dy * dy);
 	}
 
 	protected AStarPathModifier(final AStarPathModifier pPathModifier)
@@ -224,10 +217,6 @@ abstract public class AStarPathModifier extends EntityModifier implements IAStar
 			this.mPath.set(i, pPathModifier.getPath().getX(i),
 					pPathModifier.getPath().getY(i));
 		}
-		this.mEaseFunction = pPathModifier.mEaseFunction;
-		this.mDuration = pPathModifier.mDuration;
-		this.mTileH = pPathModifier.mTileH;
-		this.mTileW = pPathModifier.mTileW;
 		this.mSequenceModifier = pPathModifier.mSequenceModifier.deepCopy();
 	}
 
