@@ -1,16 +1,12 @@
 package eu.nazgee.game.physics;
 
 import org.andengine.extension.physics.box2d.PhysicsConnector;
-import org.andengine.extension.physics.box2d.util.Vector2Pool;
-
-import android.util.FloatMath;
-import android.util.Log;
 
 import com.badlogic.gdx.math.Vector2;
 
 import eu.nazgee.game.utils.UtilsMath;
 
-public class TrackAngle implements ITrack {
+public class TrackAngle extends Track {
 
 	private Vector2 mVec;  
 	private PhysicsConnector mBody; 
@@ -18,11 +14,12 @@ public class TrackAngle implements ITrack {
 	public TrackAngle(PhysicsConnector pBody) {
 		mBody = pBody;
 		mVec = new Vector2(1,0);
+		setNorm(1);
 	}
 
 	@Override
 	public Vector2 getTrack() {
-		mVec.set(1, 0);
+		mVec.set(getNorm() * getScale(), 0);
 		float deg = mBody.getShape().getRotation();
 		UtilsMath.vectorRotateDeg(mVec, deg);
 		return mVec;

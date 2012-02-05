@@ -1,12 +1,10 @@
 package eu.nazgee.game.physics;
 
 import org.andengine.extension.physics.box2d.PhysicsWorld;
-import org.andengine.extension.physics.box2d.util.Vector2Pool;
 
 import com.badlogic.gdx.math.Vector2;
 
-public class TrackGravity implements ITrack {
-
+public class TrackGravity extends Track {
 	private Vector2 mVec;  
 	private PhysicsWorld mWorld; 
 
@@ -18,6 +16,15 @@ public class TrackGravity implements ITrack {
 	@Override
 	public Vector2 getTrack() {
 		mVec.set(mWorld.getGravity());
-		return mVec;
+
+		if (isNormalized()) {
+			mVec.set(mVec.nor()).mul(getNorm());
+		}
+
+		if (getScale() != 1) {
+			return mVec.mul(getScale());
+		} else {
+			return mVec;
+		}
 	}
 }

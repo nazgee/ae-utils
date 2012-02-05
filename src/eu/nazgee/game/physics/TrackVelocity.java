@@ -1,13 +1,10 @@
 package eu.nazgee.game.physics;
 
 import org.andengine.extension.physics.box2d.PhysicsConnector;
-import org.andengine.extension.physics.box2d.util.Vector2Pool;
 
 import com.badlogic.gdx.math.Vector2;
 
-import eu.nazgee.game.utils.UtilsMath;
-
-public class TrackVelocity implements ITrack {
+public class TrackVelocity extends Track {
 
 	private Vector2 mVec;  
 	private PhysicsConnector mBody; 
@@ -20,6 +17,15 @@ public class TrackVelocity implements ITrack {
 	@Override
 	public Vector2 getTrack() {
 		mVec.set(mBody.getBody().getLinearVelocity());
-		return mVec;
+
+		if (isNormalized()) {
+			mVec.set(mVec.nor()).mul(getNorm());
+		}
+
+		if (getScale() != 1) {
+			return mVec.mul(getScale());
+		} else {
+			return mVec;
+		}
 	}
 }
