@@ -1,9 +1,9 @@
 package eu.nazgee.game.engine.camera;
 
-public class LinerarSmoother implements ISmoother {
+public class SmootherLinear implements ISmoother {
 	float mFactor;
 
-	public LinerarSmoother(float mFactor) {
+	public SmootherLinear(float mFactor) {
 		this.mFactor = mFactor;
 	}
 
