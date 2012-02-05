@@ -35,6 +35,10 @@ public class SmoothTrackingCamera extends SmoothCamera {
 		mOffsetDeg = pOffsetDeg;
 	}
 
+	public ITrack getTracking() {
+		return mTrack;
+	}
+
 	protected float limitToMaxDeg(final float pValue, final float pSecondsElapsed) {
 		if(pValue > 0) {
 			return Math.min(pValue, this.getMaxVelocityDeg() * pSecondsElapsed);
