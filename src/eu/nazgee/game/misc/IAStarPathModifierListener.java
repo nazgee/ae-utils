@@ -1,7 +1,7 @@
 package eu.nazgee.game.misc;
 
 import org.andengine.entity.IEntity;
-import org.andengine.util.path.Direction;
+import org.andengine.util.algorithm.path.Direction;
 
 public interface IAStarPathModifierListener {
 	// ===========================================================

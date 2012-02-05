@@ -1,19 +1,17 @@
 package eu.nazgee.game.misc;
 
-import org.andengine.extension.tmx.TMXTile;
-import org.andengine.extension.tmx.TMXTiledMap;
 import org.andengine.entity.IEntity;
 import org.andengine.entity.modifier.EntityModifier;
 import org.andengine.entity.modifier.IEntityModifier;
 import org.andengine.entity.modifier.MoveModifier;
+import org.andengine.extension.tmx.TMXTile;
+import org.andengine.extension.tmx.TMXTiledMap;
+import org.andengine.util.algorithm.path.Path;
 import org.andengine.util.modifier.IModifier;
 import org.andengine.util.modifier.SequenceModifier;
 import org.andengine.util.modifier.SequenceModifier.ISubSequenceModifierListener;
 import org.andengine.util.modifier.ease.EaseLinear;
 import org.andengine.util.modifier.ease.IEaseFunction;
-import org.andengine.util.path.Path;
-
-import android.util.FloatMath;
 
 abstract public class AStarPathModifier extends EntityModifier implements IAStarPathModifier {
 	// ===========================================================

@@ -4,8 +4,8 @@ import org.andengine.entity.modifier.IEntityModifier;
 import org.andengine.entity.modifier.MoveModifier;
 import org.andengine.extension.tmx.TMXTile;
 import org.andengine.extension.tmx.TMXTiledMap;
+import org.andengine.util.algorithm.path.Path;
 import org.andengine.util.modifier.ease.IEaseFunction;
-import org.andengine.util.path.Path;
 
 public class AStarPathModifierSpeed extends AStarPathModifier {
 

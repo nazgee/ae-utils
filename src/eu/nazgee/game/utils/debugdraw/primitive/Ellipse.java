@@ -3,12 +3,12 @@ package eu.nazgee.game.utils.debugdraw.primitive;
 import org.andengine.engine.camera.Camera;
 import org.andengine.entity.shape.RectangularShape;
 import org.andengine.opengl.shader.PositionColorShaderProgram;
-import org.andengine.opengl.shader.util.constants.ShaderProgramConstants;
+import org.andengine.opengl.shader.constants.ShaderProgramConstants;
 import org.andengine.opengl.util.GLState;
 import org.andengine.opengl.vbo.HighPerformanceVertexBufferObject;
 import org.andengine.opengl.vbo.IVertexBufferObject;
-import org.andengine.opengl.vbo.VertexBufferObjectManager;
 import org.andengine.opengl.vbo.VertexBufferObject.DrawType;
+import org.andengine.opengl.vbo.VertexBufferObjectManager;
 import org.andengine.opengl.vbo.attribute.VertexBufferObjectAttributes;
 import org.andengine.opengl.vbo.attribute.VertexBufferObjectAttributesBuilder;
 import org.andengine.util.color.Color;
@@ -215,7 +215,7 @@ public class Ellipse extends RectangularShape {
 		public void onUpdateColor(Ellipse pEllipse) {
 			final float[] bufferData = this.mBufferData;
 
-			final float packedColor = pEllipse.getColor().getPacked();
+			final float packedColor = pEllipse.getColor().getFloatPacked();
 
 			int i;
 			
@@ -227,7 +227,7 @@ public class Ellipse extends RectangularShape {
 				bufferData[i * Ellipse.VERTEX_SIZE + Ellipse.COLOR_INDEX] = packedColor;
 				i++;
 				
-				bufferData[i * Ellipse.VERTEX_SIZE + Ellipse.COLOR_INDEX] = pEllipse.mCentroidColor.getPacked();
+				bufferData[i * Ellipse.VERTEX_SIZE + Ellipse.COLOR_INDEX] = pEllipse.mCentroidColor.getFloatPacked();
 				i++;
 			}
 			
