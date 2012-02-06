@@ -109,10 +109,8 @@ public class AStarPathModifierSpeed extends AStarPathModifier {
 	// ===========================================================
 	@Override
 	MoveModifier populateMoveMod(final Path pPath, final TMXTile from, final TMXTile to, final float pParam, final float pLen, final IEaseFunction pEaseFunction) {
-//		final float w = to.getTileWidth()/2;
-//		final float h = to.getTileHeight()/2;
-		final float w = 0;
-		final float h = 0;
+		final float w = to.getTileWidth()/2;
+		final float h = to.getTileHeight()/2;
 
 		return new MoveModifier(pLen / pParam, 
 				from.getTileX()+w, to.getTileX()+w,
