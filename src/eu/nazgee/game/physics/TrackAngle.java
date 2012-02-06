@@ -8,18 +8,18 @@ import eu.nazgee.game.utils.UtilsMath;
 
 public class TrackAngle extends Track {
 
-	private Vector2 mVec;  
 	private PhysicsConnector mBody; 
 
 	public TrackAngle(PhysicsConnector pBody) {
+		super(1,0);
 		mBody = pBody;
-		mVec = new Vector2(1,0);
 		setNorm(1);
 	}
 
 	@Override
 	public Vector2 getTrack() {
 		mVec.set(getNorm() * getScale(), 0);
+
 		float deg = mBody.getShape().getRotation();
 		UtilsMath.vectorRotateDeg(mVec, deg);
 		return mVec;
