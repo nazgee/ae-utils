@@ -1,5 +1,7 @@
 package eu.nazgee.game.misc;
 
-public interface IAStarPathModifier {
+import org.andengine.entity.modifier.IEntityModifier;
+
+public interface IAStarPathModifier extends IEntityModifier{
 
 }
