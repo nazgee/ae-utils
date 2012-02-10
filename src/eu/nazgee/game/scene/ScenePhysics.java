@@ -1,9 +1,7 @@
 package eu.nazgee.game.scene;
 
-import org.andengine.engine.camera.Camera;
-import org.andengine.engine.camera.hud.HUD;
-import org.andengine.entity.scene.CameraScene;
 import org.andengine.entity.scene.Scene;
+import org.andengine.extension.physics.box2d.FixedStepPhysicsWorld;
 import org.andengine.extension.physics.box2d.PhysicsConnector;
 import org.andengine.extension.physics.box2d.PhysicsWorld;
 import org.andengine.opengl.vbo.VertexBufferObjectManager;
@@ -29,14 +27,18 @@ public class ScenePhysics extends Scene implements ContactListener {
 	private final VertexBufferObjectManager mVertexBufferObjectManager;
 	
 	public ScenePhysics(final VertexBufferObjectManager pVertexBufferObjectManager) {
-		this(pVertexBufferObjectManager, new Vector2(0, SensorManager.GRAVITY_EARTH), false);
+		this(pVertexBufferObjectManager, new Vector2(0, SensorManager.GRAVITY_EARTH), false, 0);
 	}
 
-	public ScenePhysics(final VertexBufferObjectManager pVertexBufferObjectManager, final Vector2 pGravity, final boolean pAllowSleep) {
+	public ScenePhysics(final VertexBufferObjectManager pVertexBufferObjectManager, final Vector2 pGravity, final boolean pAllowSleep, int fixedStep) {
 		super();
 		mVertexBufferObjectManager = pVertexBufferObjectManager;
-		
-		mPhysics = new PhysicsWorld(pGravity.mul(0.02f), pAllowSleep);
+
+		if (fixedStep > 0) {
+			mPhysics = new FixedStepPhysicsWorld(fixedStep, pGravity.mul(0.02f), pAllowSleep);
+		} else {
+			mPhysics = new PhysicsWorld(pGravity.mul(0.02f), pAllowSleep);
+		}
 		mGroundBody = mPhysics.createBody(new BodyDef());
 		
 		registerUpdateHandler(getPhysics());
