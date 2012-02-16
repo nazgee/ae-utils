@@ -1,5 +1,6 @@
 package eu.nazgee.game.scene;
 
+import org.andengine.engine.Engine;
 import org.andengine.entity.scene.Scene;
 import org.andengine.extension.physics.box2d.FixedStepPhysicsWorld;
 import org.andengine.extension.physics.box2d.PhysicsConnector;
@@ -7,6 +8,7 @@ import org.andengine.extension.physics.box2d.PhysicsWorld;
 import org.andengine.opengl.vbo.VertexBufferObjectManager;
 import org.andengine.util.color.Color;
 
+import android.content.Context;
 import android.hardware.SensorManager;
 
 import com.badlogic.gdx.math.Vector2;
@@ -20,7 +22,7 @@ import com.badlogic.gdx.physics.box2d.Manifold;
 import eu.nazgee.game.primitives.GridDouble;
 
 //public class ScenePhysics extends CameraScene implements ContactListener {
-public class ScenePhysics extends Scene implements ContactListener {
+public class ScenePhysics extends Scene implements ContactListener, ISceneLoadable {
 	private Body mGroundBody;
 	private PhysicsWorld mPhysics;
 	private GridDouble mDebugGrid;
@@ -39,9 +41,6 @@ public class ScenePhysics extends Scene implements ContactListener {
 		} else {
 			mPhysics = new PhysicsWorld(pGravity.mul(0.02f), pAllowSleep);
 		}
-		mGroundBody = mPhysics.createBody(new BodyDef());
-		
-		registerUpdateHandler(getPhysics());
 	}
 	
 	public Body getGroundBody() {
@@ -142,5 +141,24 @@ public class ScenePhysics extends Scene implements ContactListener {
 	protected void reattachDebugGrid() {
 		if (mDebugGrid != null)
 			attachChild(mDebugGrid); 
+	}
+
+	@Override
+	public void loadResources(Engine e, Context c) {
+	}
+
+	@Override
+	public Scene load(final Engine e, Context c) {
+		mGroundBody = mPhysics.createBody(new BodyDef());
+		registerUpdateHandler(mPhysics);
+
+		return this;
+	}
+
+	@Override
+	public void unload() {
+		mPhysics.destroyBody(mGroundBody);
+		unregisterUpdateHandler(mPhysics);
+		reset();
 	}
 }
