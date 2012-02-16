@@ -5,11 +5,16 @@ import org.andengine.entity.scene.Scene;
 import org.andengine.opengl.vbo.VertexBufferObjectManager;
 
 import android.content.Context;
+import android.util.Log;
 
 abstract public class SceneLoadable extends Scene implements ISceneLoadable {
 	float mW, mH;
 	boolean mLoaded = false;
 	private final VertexBufferObjectManager mVertexBufferObjectManager;
+
+	public SceneLoadable(final VertexBufferObjectManager pVertexBufferObjectManager) {
+		this(0, 0, pVertexBufferObjectManager);
+	}
 
 	public SceneLoadable(float W, float H, final VertexBufferObjectManager pVertexBufferObjectManager) {
 		mVertexBufferObjectManager = pVertexBufferObjectManager;

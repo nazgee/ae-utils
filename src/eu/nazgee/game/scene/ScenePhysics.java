@@ -21,20 +21,17 @@ import com.badlogic.gdx.physics.box2d.Manifold;
 
 import eu.nazgee.game.primitives.GridDouble;
 
-//public class ScenePhysics extends CameraScene implements ContactListener {
-public class ScenePhysics extends Scene implements ContactListener, ISceneLoadable {
+public class ScenePhysics extends SceneLoadable implements ContactListener {
 	private Body mGroundBody;
 	private PhysicsWorld mPhysics;
 	private GridDouble mDebugGrid;
-	private final VertexBufferObjectManager mVertexBufferObjectManager;
 	
 	public ScenePhysics(final VertexBufferObjectManager pVertexBufferObjectManager) {
 		this(pVertexBufferObjectManager, new Vector2(0, SensorManager.GRAVITY_EARTH), false, 0);
 	}
 
 	public ScenePhysics(final VertexBufferObjectManager pVertexBufferObjectManager, final Vector2 pGravity, final boolean pAllowSleep, int fixedStep) {
-		super();
-		mVertexBufferObjectManager = pVertexBufferObjectManager;
+		super(pVertexBufferObjectManager);
 
 		if (fixedStep > 0) {
 			mPhysics = new FixedStepPhysicsWorld(fixedStep, pGravity.mul(0.02f), pAllowSleep);
@@ -42,7 +39,9 @@ public class ScenePhysics extends Scene implements ContactListener, ISceneLoadab
 			mPhysics = new PhysicsWorld(pGravity.mul(0.02f), pAllowSleep);
 		}
 	}
-	
+	/*=========================================================================
+	 * 							getters & setters
+	 *=======================================================================*/
 	public Body getGroundBody() {
 		return mGroundBody;
 	}
@@ -50,7 +49,27 @@ public class ScenePhysics extends Scene implements ContactListener, ISceneLoadab
 	public PhysicsWorld getPhysics() {
 		return mPhysics;
 	}
-	
+	/*=========================================================================
+	 * 							from SceneLoadable
+	 *=======================================================================*/
+	@Override
+	public Scene load(final Engine e, Context c) {
+		mGroundBody = mPhysics.createBody(new BodyDef());
+		registerUpdateHandler(mPhysics);
+
+		return this;
+	}
+
+	@Override
+	public void unload() {
+		mPhysics.destroyBody(mGroundBody);
+		unregisterUpdateHandler(mPhysics);
+		reset();
+	}
+
+	@Override
+	public void loadResourcesOnce(Engine e, Context c) {
+	}
 	/*=========================================================================
 	 * 							ContactListener implementation
 	 *=======================================================================*/
@@ -116,14 +135,6 @@ public class ScenePhysics extends Scene implements ContactListener, ISceneLoadab
 	}
 
 	/*=========================================================================
-	 * 							getters & setters
-	 *=======================================================================*/
-	
-	public VertexBufferObjectManager getVertexBufferObjectManager() {
-		return mVertexBufferObjectManager;
-	}
-	
-	/*=========================================================================
 	 * 							helpers
 	 *=======================================================================*/
 	
@@ -141,24 +152,5 @@ public class ScenePhysics extends Scene implements ContactListener, ISceneLoadab
 	protected void reattachDebugGrid() {
 		if (mDebugGrid != null)
 			attachChild(mDebugGrid); 
-	}
-
-	@Override
-	public void loadResources(Engine e, Context c) {
-	}
-
-	@Override
-	public Scene load(final Engine e, Context c) {
-		mGroundBody = mPhysics.createBody(new BodyDef());
-		registerUpdateHandler(mPhysics);
-
-		return this;
-	}
-
-	@Override
-	public void unload() {
-		mPhysics.destroyBody(mGroundBody);
-		unregisterUpdateHandler(mPhysics);
-		reset();
 	}
 }
