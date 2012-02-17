@@ -21,7 +21,7 @@ import com.badlogic.gdx.physics.box2d.Manifold;
 
 import eu.nazgee.game.primitives.GridDouble;
 
-public class ScenePhysics extends SceneLoadable implements ContactListener {
+abstract public class ScenePhysics extends SceneLoadable implements ContactListener {
 	private Body mGroundBody;
 	private PhysicsWorld mPhysics;
 	private GridDouble mDebugGrid;
@@ -67,9 +67,6 @@ public class ScenePhysics extends SceneLoadable implements ContactListener {
 		reset();
 	}
 
-	@Override
-	public void loadResourcesOnce(Engine e, Context c) {
-	}
 	/*=========================================================================
 	 * 							ContactListener implementation
 	 *=======================================================================*/

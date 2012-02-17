@@ -8,8 +8,9 @@ import android.content.Context;
 import android.util.Log;
 
 abstract public class SceneLoadable extends Scene implements ISceneLoadable {
-	float mW, mH;
-	boolean mLoaded = false;
+	private float mW, mH;
+	private boolean mLoaded = false;
+	private static Boolean mLoadedStatic = new Boolean(false);
 	private final VertexBufferObjectManager mVertexBufferObjectManager;
 
 	public SceneLoadable(final VertexBufferObjectManager pVertexBufferObjectManager) {
@@ -31,6 +32,12 @@ abstract public class SceneLoadable extends Scene implements ISceneLoadable {
 
 	@Override
 	public void loadResources(Engine e, Context c) {
+		synchronized (mLoadedStatic) {
+			if (mLoadedStatic.booleanValue() == false) {
+				loadResourcesOnceStatic(e, c);
+				mLoadedStatic = true;
+			}
+		}
 		if (!mLoaded) {
 			loadResourcesOnce(e, c);
 			mLoaded = true;
@@ -42,5 +49,5 @@ abstract public class SceneLoadable extends Scene implements ISceneLoadable {
 		return mVertexBufferObjectManager;
 	}
 
-	abstract public void loadResourcesOnce(Engine e, Context c);
+	abstract public void loadResourcesOnceStatic(Engine e, Context c);
 }

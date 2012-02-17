@@ -42,4 +42,8 @@ public class SceneLoading extends SceneLoadable {
 
 		this.attachChild(mTextLoading);
 	}
+
+	@Override
+	public void loadResourcesOnceStatic(Engine e, Context c) {
+	}
 }

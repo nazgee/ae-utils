@@ -25,7 +25,7 @@ import org.andengine.util.modifier.ease.EaseExponentialOut;
 import android.content.Context;
 import android.util.Log;
 
-public class SceneSplash extends SceneLoadable implements IOnSceneTouchListener, IOnAreaTouchListener {
+abstract public class SceneSplash extends SceneLoadable implements IOnSceneTouchListener, IOnAreaTouchListener {
 
 	BitmapTextureAtlas mAtlasLogos;
 
