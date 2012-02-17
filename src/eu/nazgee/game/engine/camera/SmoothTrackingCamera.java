@@ -57,6 +57,9 @@ public class SmoothTrackingCamera extends SmoothCamera {
 		// Set X-Y position
 		super.onUpdate(pSecondsElapsed);
 		
+		if (mTrack == null)
+			return;
+
 		// Adjust maximum Rot speed
 		Vector2 track = Vector2Pool.obtain(mTrack.getTrack());
 		float currDeg = getRotation();
