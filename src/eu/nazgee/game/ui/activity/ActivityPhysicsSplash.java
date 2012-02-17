@@ -1,7 +1,6 @@
 package eu.nazgee.game.ui.activity;
 
 import org.andengine.extension.physics.box2d.util.Vector2Pool;
-import org.andengine.ui.activity.SimpleBaseGameActivity;
 
 import com.badlogic.gdx.math.Vector2;
 
@@ -9,13 +8,13 @@ import eu.nazgee.game.physics.ITrack;
 import eu.nazgee.game.scene.ScenePhysics;
 import eu.nazgee.game.utils.UtilsMath;
 
-abstract public class ActivityPhysics extends SimpleBaseGameActivity {
+abstract public class ActivityPhysicsSplash extends ActivitySplash {
 
 	private ScenePhysics mSceneMain;
 	private ITrack mGravityTrack;
 	private Vector2 mGravityVector;
 	
-	public ActivityPhysics() {
+	public ActivityPhysicsSplash() {
 		super();
 		mGravityVector = Vector2Pool.obtain(0, 0);
 	}

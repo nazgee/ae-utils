@@ -8,7 +8,7 @@ import org.andengine.entity.scene.Scene;
 import android.content.Context;
 import eu.nazgee.game.misc.ILoadable;
 
-public class AsyncLoader implements IAsyncWorkCallback {
+public class AsyncLoader implements IAsyncTasklet {
 	
 	private volatile Scene mScene;
 	WeakReference<Engine> mEngine; 

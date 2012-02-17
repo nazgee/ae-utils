@@ -16,13 +16,6 @@ import eu.nazgee.game.scene.SceneSplash;
 
 
 abstract public class ActivitySplash extends SimpleBaseGameActivity implements ILoadable {
-
-	protected volatile SceneSplash mSplash;
-	
-	public ActivitySplash(int pW, int pH, SceneSplash pSplash) {
-		mSplash = pSplash;
-	}
-
 	@Override
 	public void onCreateResources() {
 		SoundFactory.setAssetBasePath("mfx/");
@@ -33,7 +26,7 @@ abstract public class ActivitySplash extends SimpleBaseGameActivity implements I
 	/*
 	 * Here's where the assets are loaded in the background behind the loading scene.
 	 */
-	class Loader implements IAsyncWorkCallback {
+	class Loader implements IAsyncTasklet {
 		private volatile Scene mScene;
 		WeakReference<Engine> mEngine; 
 		WeakReference<Context> mContext;
@@ -68,11 +61,10 @@ abstract public class ActivitySplash extends SimpleBaseGameActivity implements I
 		}
 	}
 
-	@Override
-	public Scene onCreateScene() {
-		mSplash.load(getEngine(), this);
-		Loader loader = new Loader(getEngine(), this, mSplash);
-		new AsyncWorkLoader().execute(loader);
-		return mSplash;
+	public Scene onCreateScene(SceneSplash pSplash) {
+		pSplash.load(getEngine(), this);
+		Loader loader = new Loader(getEngine(), this, pSplash);
+		new TaskletsRunner().execute(loader);
+		return pSplash;
 	}
 }
