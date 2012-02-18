@@ -6,6 +6,7 @@ import org.andengine.entity.scene.menu.MenuScene;
 import org.andengine.opengl.vbo.VertexBufferObjectManager;
 
 import android.content.Context;
+import eu.nazgee.game.misc.ISceneLoadable;
 
 abstract public class SceneMenuLoadable extends MenuScene implements ISceneLoadable {
 	float mW, mH;

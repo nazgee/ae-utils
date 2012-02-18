@@ -5,7 +5,7 @@ import org.andengine.entity.scene.Scene;
 import org.andengine.opengl.vbo.VertexBufferObjectManager;
 
 import android.content.Context;
-import android.util.Log;
+import eu.nazgee.game.misc.ISceneLoadable;
 
 abstract public class SceneLoadable extends Scene implements ISceneLoadable {
 	private float mW, mH;
@@ -49,5 +49,6 @@ abstract public class SceneLoadable extends Scene implements ISceneLoadable {
 		return mVertexBufferObjectManager;
 	}
 
-	abstract public void loadResourcesOnceStatic(Engine e, Context c);
+	abstract protected void loadResourcesOnceStatic(Engine e, Context c);
+	abstract protected void loadResourcesOnce(Engine e, Context c);
 }

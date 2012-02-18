@@ -1,6 +1,7 @@
 package eu.nazgee.game.ui.activity;
 
 import android.os.AsyncTask;
+import android.util.Log;
 
 /**
  * Class that can be used to to run IAsyncTasklets in background
@@ -12,21 +13,40 @@ public class TaskletsRunner extends
 
 	IAsyncTasklet[] mParams;
 
+	public TaskletsRunner(IAsyncTasklet... pParams) {
+		super();
+		mParams = pParams;
+	}
+
+	@Override
+	protected void onPreExecute() {
+		Log.d(getClass().getName(), "Starting onPreExecute");
+		int count = mParams.length;
+		for (int i = 0; i < count; i++) {
+			mParams[i].onAboutToStart();
+		}
+		Log.d(getClass().getName(), "onPreExecute is complete");
+	}
+
 	@Override
 	protected Boolean doInBackground(IAsyncTasklet... params) {
-		this.mParams = params;
+		Log.d(getClass().getName(), "Starting background work; " + this.toString());
+
 		int count = params.length;
 		for (int i = 0; i < count; i++) {
 			params[i].workToDo();
 		}
-		
+
+		Log.d(getClass().getName(), "All background work is complete " + this.toString());
 		return true;
 	}
 
 	protected void onPostExecute(Boolean result) {
-		int count = this.mParams.length;
+		Log.d(getClass().getName(), "Starting onPostExecute");
+		int count = mParams.length;
 		for (int i = 0; i < count; i++) {
-			this.mParams[i].onComplete();
+			mParams[i].onComplete();
 		}
+		Log.d(getClass().getName(), "onPostExecute is complete");
 	}
 }

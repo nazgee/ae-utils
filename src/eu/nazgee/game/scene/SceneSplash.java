@@ -16,7 +16,6 @@ import org.andengine.entity.sprite.Sprite;
 import org.andengine.entity.text.Text;
 import org.andengine.input.touch.TouchEvent;
 import org.andengine.opengl.font.Font;
-import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlas;
 import org.andengine.opengl.vbo.VertexBufferObjectManager;
 import org.andengine.util.modifier.IModifier;
 import org.andengine.util.modifier.ease.EaseExponentialIn;
@@ -25,7 +24,7 @@ import org.andengine.util.modifier.ease.EaseExponentialOut;
 import android.content.Context;
 import android.util.Log;
 
-abstract public class SceneSplash extends SceneLoadable implements IOnSceneTouchListener, IOnAreaTouchListener {
+public class SceneSplash extends SceneLoadable implements IOnSceneTouchListener, IOnAreaTouchListener {
 
 	LinkedList<Sprite> mSprites = new LinkedList<Sprite>();
 	private Text mTextLoading;
@@ -41,11 +40,15 @@ abstract public class SceneSplash extends SceneLoadable implements IOnSceneTouch
 	}
 
 	@Override
+	public void loadResourcesOnceStatic(Engine e, Context c) {
+	}
+
+	@Override
 	public void loadResourcesOnce(Engine e, Context c) {
 		mTextLoading = new Text(getW() + 100, getH() / 2, mFont, "Loading...", getVertexBufferObjectManager());
 	}
 
-	protected void addLoadingSprite(Sprite pSprite) {
+	protected void addSplashScreen(Sprite pSprite) {
 		mSprites.add(pSprite);
 	}
 
@@ -104,15 +107,18 @@ abstract public class SceneSplash extends SceneLoadable implements IOnSceneTouch
 	}
 
 	protected void setComplete(boolean pComplete) {
+		Log.d(getClass().getSimpleName(), "Splash screen setComplete(" + pComplete + ")");
 		this.mComplete = pComplete;
 	}
 
 	/**
-	 * Used to wait until splashscreen is gone
+	 * Waits until splashscreen is finished, then returns
 	 */
 	public void waitForCompleted() {
+		Log.d(getClass().getSimpleName(), "Starting to wait for splash screen to finish");
 		while (true) {
-			if (mComplete) {
+			if (isComplete()) {
+				Log.d(getClass().getSimpleName(), "Splash screen finished");
 				return;
 			}
 
@@ -125,7 +131,7 @@ abstract public class SceneSplash extends SceneLoadable implements IOnSceneTouch
 	}
 
 	/**
-	 * Used to check if splashscreen is gone
+	 * Used to check if splashscreen is finished
 	 * @return true when splashscreen is complete
 	 */
 	public boolean isComplete() {
@@ -163,6 +169,7 @@ abstract public class SceneSplash extends SceneLoadable implements IOnSceneTouch
 
 	@Override
 	public boolean onSceneTouchEvent(Scene pScene, TouchEvent pSceneTouchEvent) {
+		Log.d(getClass().getSimpleName(), "Someone is toching the screen while loading!");
 		return true;
 	}
 
@@ -170,7 +177,7 @@ abstract public class SceneSplash extends SceneLoadable implements IOnSceneTouch
 	public boolean onAreaTouched(TouchEvent pSceneTouchEvent,
 			ITouchArea pTouchArea, float pTouchAreaLocalX,
 			float pTouchAreaLocalY) {
-		Log.d("SceneSplash", "Someone is poking the screen while loading!");
+		Log.d(getClass().getSimpleName(), "Someone is poking the screen while loading!");
 		return true;
 	}
 }

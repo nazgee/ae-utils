@@ -11,21 +11,23 @@ import eu.nazgee.game.utils.UtilsMath;
 
 abstract public class ActivityPhysics extends SimpleBaseGameActivity {
 
-	private ScenePhysics mSceneMain;
-	private ITrack mGravityTrack;
+	private ScenePhysics mScenePhysics;
 	private Vector2 mGravityVector;
+
+	private ITrack mGravityTrack;
+	private float mGravityTrackRotation;
 	
 	public ActivityPhysics() {
 		super();
 		mGravityVector = Vector2Pool.obtain(0, 0);
 	}
 	
-	protected void setMainScene(ScenePhysics pSceneMain) {
-		mSceneMain = pSceneMain;
+	protected void setPhysicsScene(ScenePhysics pScenePhysics) {
+		mScenePhysics = pScenePhysics;
 	}
 	
-	protected ScenePhysics getMainScene() {
-		return mSceneMain;
+	protected ScenePhysics getPhysicsScene() {
+		return mScenePhysics;
 	}
 
 	public ITrack getGravityTranslationTrack() {
@@ -33,7 +35,12 @@ abstract public class ActivityPhysics extends SimpleBaseGameActivity {
 	}
 
 	protected void setGravityTranslationTrack(ITrack pGravityTrack) {
-		this.mGravityTrack = pGravityTrack;
+		setGravityTranslationTrack(pGravityTrack, 0);
+	}
+
+	protected void setGravityTranslationTrack(ITrack pGravityTrack, float pGravityTrackRotation) {
+		mGravityTrack = pGravityTrack;
+		mGravityTrackRotation = pGravityTrackRotation;
 	}
 
 	public Vector2 getGravity() {
@@ -47,15 +54,15 @@ abstract public class ActivityPhysics extends SimpleBaseGameActivity {
 	public void setGravity(float pX, float pY) {
 		this.mGravityVector.set(pX, pY);
 		
-		if (mSceneMain != null) {
+		if (getPhysicsScene() != null) {
 			if (getGravityTranslationTrack() != null) {
 				// compensate gravitation vector the given gravity track
 				Vector2 track = getGravityTranslationTrack().getTrack();
 				float deg = UtilsMath.getAngleDeg(track);
-				UtilsMath.vectorRotateDeg(mGravityVector, deg + 90);
+				UtilsMath.vectorRotateDeg(mGravityVector, deg + mGravityTrackRotation);
 			}
 
-			mSceneMain.getPhysics().setGravity(getGravity());
+			getPhysicsScene().getPhysics().setGravity(getGravity());
 		}
 	}
 }

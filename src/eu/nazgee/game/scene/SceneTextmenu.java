@@ -2,20 +2,13 @@ package eu.nazgee.game.scene;
 
 import javax.microedition.khronos.opengles.GL10;
 
-import org.andengine.engine.Engine;
 import org.andengine.engine.camera.Camera;
-import org.andengine.entity.scene.Scene;
-import org.andengine.entity.scene.Scene.ITouchArea;
 import org.andengine.entity.scene.menu.item.IMenuItem;
 import org.andengine.entity.scene.menu.item.TextMenuItem;
 import org.andengine.entity.scene.menu.item.decorator.ColorMenuItemDecorator;
-import org.andengine.entity.sprite.Sprite;
-import org.andengine.input.touch.TouchEvent;
 import org.andengine.opengl.font.Font;
 import org.andengine.opengl.vbo.VertexBufferObjectManager;
 import org.andengine.util.color.Color;
-
-import android.content.Context;
 
 abstract public class SceneTextmenu extends SceneMenuLoadable {
 
