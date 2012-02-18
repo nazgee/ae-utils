@@ -63,8 +63,15 @@ abstract public class ActivitySplash extends SimpleBaseGameActivity implements I
 
 	public Scene onCreateScene(SceneSplash pSplash) {
 		pSplash.load(getEngine(), this);
-		Loader loader = new Loader(getEngine(), this, pSplash);
-		new TaskletsRunner().execute(loader);
+		final Loader loader = new Loader(getEngine(), this, pSplash);
+		// We need to defer this executing TaskletRunner, since it needs running looper
+		runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				new TaskletsRunner().execute(loader);
+			}
+		});
+
 		return pSplash;
 	}
 }

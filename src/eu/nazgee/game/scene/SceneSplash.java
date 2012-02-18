@@ -27,8 +27,6 @@ import android.util.Log;
 
 abstract public class SceneSplash extends SceneLoadable implements IOnSceneTouchListener, IOnAreaTouchListener {
 
-	BitmapTextureAtlas mAtlasLogos;
-
 	LinkedList<Sprite> mSprites = new LinkedList<Sprite>();
 	private Text mTextLoading;
 	private float mTotalTime;
@@ -45,7 +43,6 @@ abstract public class SceneSplash extends SceneLoadable implements IOnSceneTouch
 	@Override
 	public void loadResourcesOnce(Engine e, Context c) {
 		mTextLoading = new Text(getW() + 100, getH() / 2, mFont, "Loading...", getVertexBufferObjectManager());
-		e.getTextureManager().loadTexture(mAtlasLogos);
 	}
 
 	protected void addLoadingSprite(Sprite pSprite) {
