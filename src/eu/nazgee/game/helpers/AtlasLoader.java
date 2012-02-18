@@ -17,8 +17,8 @@ public class AtlasLoader {
 	 * @param iAtlases list of BuildableBitmapTextureAtlases to build/load
 	 * @note Throws a runtime exception if building/loading failed
 	 */
-	static public void buildAndLoad(TextureManager tm, BuildableBitmapTextureAtlas... iAtlases) {
-		buildAndLoad(new BlackPawnTextureAtlasBuilder<IBitmapTextureAtlasSource, BitmapTextureAtlas>(0, 0, 1), tm, iAtlases);
+	static public void buildAndLoad(BuildableBitmapTextureAtlas... iAtlases) {
+		buildAndLoad(new BlackPawnTextureAtlasBuilder<IBitmapTextureAtlasSource, BitmapTextureAtlas>(0, 0, 1), iAtlases);
 	}
 	
 	/**
@@ -28,12 +28,12 @@ public class AtlasLoader {
 	 * @param iAtlases list of BuildableBitmapTextureAtlases to build/load
 	 * @note Throws a runtime exception if building/loading failed
 	 */
-	static public void buildAndLoad(BlackPawnTextureAtlasBuilder<IBitmapTextureAtlasSource, BitmapTextureAtlas> pBuilder, TextureManager tm, BuildableBitmapTextureAtlas... iAtlases) {
+	static public void buildAndLoad(BlackPawnTextureAtlasBuilder<IBitmapTextureAtlasSource, BitmapTextureAtlas> pBuilder, BuildableBitmapTextureAtlas... iAtlases) {
 		for (BuildableBitmapTextureAtlas atlas : iAtlases) {
 			try {
 				Log.d(AtlasLoader.class.getSimpleName(), "building and loading " + atlas.toString());
 				atlas.build(pBuilder);
-				atlas.load(tm);
+				atlas.load();
 			} catch (final TextureAtlasBuilderException e) {
 				Debug.e(e);
 				throw new RuntimeException("Problems with loading/building Atlas");

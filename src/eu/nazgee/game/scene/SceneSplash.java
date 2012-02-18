@@ -17,6 +17,7 @@ import org.andengine.entity.text.Text;
 import org.andengine.input.touch.TouchEvent;
 import org.andengine.opengl.font.Font;
 import org.andengine.opengl.vbo.VertexBufferObjectManager;
+import org.andengine.util.color.Color;
 import org.andengine.util.modifier.IModifier;
 import org.andengine.util.modifier.ease.EaseExponentialIn;
 import org.andengine.util.modifier.ease.EaseExponentialOut;
@@ -32,11 +33,11 @@ public class SceneSplash extends SceneLoadable implements IOnSceneTouchListener,
 	private volatile boolean mComplete = false;
 	private final Font mFont;
 	
-	public SceneSplash(float W, float H, float totalTime, final Font pFont, final VertexBufferObjectManager pVertexBufferObjectManager) {
+	public SceneSplash(float W, float H, Color pColor, float totalTime, final Font pFont, final VertexBufferObjectManager pVertexBufferObjectManager) {
 		super(W, H, pVertexBufferObjectManager);
 		mTotalTime = totalTime;
 		mFont = pFont;
-		setBackground(new Background(0, 0, 0));
+		setBackground(new Background(pColor));
 	}
 
 	@Override

@@ -7,6 +7,7 @@ import java.util.LinkedList;
 import java.util.Queue;
 
 import org.andengine.entity.Entity;
+import org.andengine.entity.primitive.Ellipse;
 import org.andengine.entity.shape.Shape;
 import org.andengine.extension.physics.box2d.PhysicsConnector;
 import org.andengine.extension.physics.box2d.PhysicsWorld;
@@ -20,9 +21,6 @@ import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
-
-import eu.nazgee.game.utils.debugdraw.primitive.Ellipse;
-import eu.nazgee.game.utils.debugdraw.primitive.Polyline;
 
 public class Box2dDebugRenderer extends Entity {
 
@@ -39,8 +37,7 @@ public class Box2dDebugRenderer extends Entity {
 	private Color staticBodyColor = new Color(0, 1, 1);
 	private Color sensorBodyColor = new Color(0.2f, 0.2f, 1);
 	private Color inactiveBodyColor = new Color(0.7f, 0.7f, 0.7f);
-	private Color centroidColor = new Color(1, 0, 1);
-	
+
 	final VertexBufferObjectManager mVertexBufferObjectManager;
 
 	public Box2dDebugRenderer(PhysicsWorld world, final VertexBufferObjectManager pVertexBufferObjectManager) {
@@ -172,8 +169,9 @@ public class Box2dDebugRenderer extends Entity {
 		CircleShape fixtureShape = (CircleShape) fixture.getShape();
 		Vector2 position = fixtureShape.getPosition();
 		Ellipse ellipse = new Ellipse(position.x, position.y,
-				fixtureShape.getRadius()
-						* PhysicsConnector.PIXEL_TO_METER_RATIO_DEFAULT, centroidColor, mVertexBufferObjectManager);
+				fixtureShape.getRadius() * PhysicsConnector.PIXEL_TO_METER_RATIO_DEFAULT,
+				fixtureShape.getRadius() * PhysicsConnector.PIXEL_TO_METER_RATIO_DEFAULT, 
+				mVertexBufferObjectManager);
 		return ellipse;
 	}
 
@@ -181,37 +179,21 @@ public class Box2dDebugRenderer extends Entity {
 		PolygonShape fixtureShape = (PolygonShape) fixture.getShape();
 		if (fixtureShape == null)
 			return null;
-		if (fixtureShape.getVertexCount()<3) { 
-			ArrayList<Float> xPoints = new ArrayList<Float>();
-			ArrayList<Float> yPoints = new ArrayList<Float>();
-			Vector2 vertex = new Vector2();
-			
-			for (int i = 0; i < fixtureShape.getVertexCount(); i++) {
-				fixtureShape.getVertex(i, vertex);
-				Log.e("debugrenderrer", "vertex" + i + "/" + fixtureShape.getVertexCount() + "=(" + vertex.x + "," + vertex.y + ")");
-				xPoints.add(vertex.x
-						* PhysicsConnector.PIXEL_TO_METER_RATIO_DEFAULT);
-				yPoints.add(vertex.y
-						* PhysicsConnector.PIXEL_TO_METER_RATIO_DEFAULT);
-			}
-			return new Polyline(xPoints, yPoints, centroidColor, mVertexBufferObjectManager);
-		} else {
-			float[] xPoints = new float[fixtureShape.getVertexCount()];
-			float[] yPoints = new float[fixtureShape.getVertexCount()];
-			Vector2 vertex = new Vector2();
-			
-			for (int i = 0; i < fixtureShape.getVertexCount(); i++) {
-				fixtureShape.getVertex(i, vertex);
-				Log.e("debugrenderrer", "vertex" + i + "/" + fixtureShape.getVertexCount() + "=(" + vertex.x + "," + vertex.y + ")");
-				xPoints[i]=(vertex.x
-						* PhysicsConnector.PIXEL_TO_METER_RATIO_DEFAULT);
-				yPoints[i]=(vertex.y
-						* PhysicsConnector.PIXEL_TO_METER_RATIO_DEFAULT);
-			}
-			Shape poly = new org.andengine.entity.primitive.Polygon(0,0, xPoints, yPoints, mVertexBufferObjectManager);;
-			poly.setColor(centroidColor);
-			return poly;
+
+		float[] xPoints = new float[fixtureShape.getVertexCount()];
+		float[] yPoints = new float[fixtureShape.getVertexCount()];
+		Vector2 vertex = new Vector2();
+		
+		for (int i = 0; i < fixtureShape.getVertexCount(); i++) {
+			fixtureShape.getVertex(i, vertex);
+			Log.e("debugrenderrer", "vertex" + i + "/" + fixtureShape.getVertexCount() + "=(" + vertex.x + "," + vertex.y + ")");
+			xPoints[i]=(vertex.x
+					* PhysicsConnector.PIXEL_TO_METER_RATIO_DEFAULT);
+			yPoints[i]=(vertex.y
+					* PhysicsConnector.PIXEL_TO_METER_RATIO_DEFAULT);
 		}
+		Shape poly = new org.andengine.entity.primitive.Polygon(0,0, xPoints, yPoints, mVertexBufferObjectManager);;
+		return poly;
 	}
 
 	public void setActiveBodyColor(int red, int green, int blue) {

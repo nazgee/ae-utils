@@ -171,7 +171,7 @@ public class Grid extends RectangularShape {
 		public void onUpdateColor(Grid pGrid) {
 			final float[] bufferData = this.mBufferData;
 
-			final float packedColor = pGrid.getColor().getFloatPacked();
+			final float packedColor = pGrid.getColor().getABGRPackedFloat();
 
 			int i;
 			for (i = 0; i < pGrid.mTotalVerticesNumber; i++) {
