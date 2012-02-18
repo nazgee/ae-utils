@@ -23,7 +23,7 @@ public class SceneLoader {
 		mLoadingScene.load(e, c);
 	}
 
-	public void loadScene(final ISceneLoadable pScene, final Engine e, final Activity c, SceneLoaderListener pListener) {
+	public void loadScene(final ISceneLoadable pScene, final Engine e, final Activity c, ISceneLoaderListener pListener) {
 		final SceneLoaderTasklet loader = new SceneLoaderTasklet(e, c, mLoadingScene, pScene, pListener);
 		c.runOnUiThread(new Runnable() {
 			@Override
@@ -44,7 +44,7 @@ public class SceneLoader {
 	// ===========================================================
 	// Inner and Anonymous Classes
 	// ===========================================================
-	public interface SceneLoaderListener {
+	public interface ISceneLoaderListener {
 		void onSceneLoaded(Scene pScene);
 	}
 
@@ -55,7 +55,7 @@ public class SceneLoader {
 		WeakReference<Engine> mEngine; 
 		WeakReference<Context> mContext;
 
-		private final SceneLoaderListener mListener;
+		private final ISceneLoaderListener mListener;
 		private final SceneLoadable mPleaseWaitScene;
 		private final ISceneLoadable mLoaderToBeLoaded;
 		private volatile Scene mLoadedScene;
@@ -67,7 +67,7 @@ public class SceneLoader {
 		 * @param pPleaseWaitScene will be unloaded, after pToBeLoaded will be loaded
 		 * @param pToBeLoaded scene that should be loaded
 		 */
-		public SceneLoaderTasklet(final Engine e, final Context c, SceneLoadable pPleaseWaitScene, ISceneLoadable pToBeLoaded, SceneLoaderListener pListener) {
+		public SceneLoaderTasklet(final Engine e, final Context c, SceneLoadable pPleaseWaitScene, ISceneLoadable pToBeLoaded, ISceneLoaderListener pListener) {
 			mEngine = new WeakReference<Engine>(e);
 			mContext = new WeakReference<Context>(c);
 

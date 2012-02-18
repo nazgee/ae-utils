@@ -19,15 +19,9 @@ abstract public class SceneTextmenu extends SceneMenuLoadable {
 		mFont = pFont;
 	}
 
-	@Override
-	public void unload() {
-		this.clearTouchAreas();
-		detachChildren();
-	}
-
-	public void addMenuEntry(String pText, int pVal, final Color pSelected, final Color pUnselected) {
+	public void addMenuEntry(String pText, int pVal, final Color pSelected, final Color pUnselected, VertexBufferObjectManager pVBOM) {
 		final IMenuItem menuItem = new ColorMenuItemDecorator(
-				new TextMenuItem(pVal, getFont(), pText, null), pSelected, pUnselected);
+				new TextMenuItem(pVal, getFont(), pText, pVBOM), pSelected, pUnselected);
 		menuItem.setBlendFunction(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA);
 		addMenuItem(menuItem);
 	}
