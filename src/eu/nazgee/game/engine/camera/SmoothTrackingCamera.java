@@ -4,6 +4,8 @@ import org.andengine.engine.camera.SmoothCamera;
 import org.andengine.extension.physics.box2d.PhysicsConnector;
 import org.andengine.extension.physics.box2d.util.Vector2Pool;
 
+import android.util.Log;
+
 import com.badlogic.gdx.math.Vector2;
 
 import eu.nazgee.game.physics.ITrack;
@@ -48,7 +50,7 @@ public class SmoothTrackingCamera extends SmoothCamera {
 	}
 
 	@Override
-	public void onUpdate(final float pSecondsElapsed) {		
+	public void onUpdate(final float pSecondsElapsed) {
 		// Adjust maximum X-Y speeds
 		final float dX = Math.abs(this.getCenterX() - this.getTargetCenterX());
 		final float dY = Math.abs(this.getCenterY() - this.getTargetCenterY());
@@ -56,7 +58,7 @@ public class SmoothTrackingCamera extends SmoothCamera {
 		setMaxVelocityY(mSmootherY.getCorrectionSpeed(dY, getMaxVelocityY()));
 		// Set X-Y position
 		super.onUpdate(pSecondsElapsed);
-		
+
 		if (mTrack == null)
 			return;
 
@@ -70,6 +72,7 @@ public class SmoothTrackingCamera extends SmoothCamera {
 		// Set X-Y rotation
 		this.setRotation(currDeg - deltaDeg);
 		
+//		Log.d(getClass().getSimpleName(), "onUpdate maxX=" + getMaxVelocityX() + "maxY=" + getMaxVelocityY());
 		Vector2Pool.recycle(track);	
 	}
 
@@ -81,6 +84,9 @@ public class SmoothTrackingCamera extends SmoothCamera {
 			mTrackHelper.set(mTrack.getTrack());
 			pCenterX += mTrackHelper.x;
 			pCenterY += mTrackHelper.y;
+//			Log.d(getClass().getSimpleName(), "setCenter cX=" + pCenterX + "cY=" + pCenterY);
+		} else {
+//			Log.d(getClass().getSimpleName(), "setCenter (null-chase) cX=" + pCenterX + "cY=" + pCenterY);
 		}
 		super.setCenter(pCenterX, pCenterY);
 	}
