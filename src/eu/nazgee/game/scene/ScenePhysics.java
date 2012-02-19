@@ -62,8 +62,11 @@ abstract public class ScenePhysics extends SceneLoadable implements ContactListe
 
 	@Override
 	public void unload() {
-		mPhysics.destroyBody(mGroundBody);
-		unregisterUpdateHandler(mPhysics);
+		getPhysics().destroyBody(mGroundBody);
+
+		getPhysics().clearForces();
+		getPhysics().clearPhysicsConnectors();
+		unregisterUpdateHandler(getPhysics());
 		reset();
 	}
 
