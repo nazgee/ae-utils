@@ -1,6 +1,7 @@
 package eu.nazgee.game.engine.camera;
 
 import org.andengine.engine.camera.SmoothCamera;
+import org.andengine.entity.IEntity;
 import org.andengine.extension.physics.box2d.PhysicsConnector;
 import org.andengine.extension.physics.box2d.util.Vector2Pool;
 
@@ -12,7 +13,7 @@ import eu.nazgee.game.physics.ITrack;
 import eu.nazgee.game.utils.UtilsMath;
 
 public class SmoothTrackingCamera extends SmoothCamera {
-	private PhysicsConnector mChaseBody;
+	private IEntity mChaseBody;
 	private ITrack mTrack;
 	private float mMaxVelocityDeg = 0;
 	private float mOffsetDeg = 0;
@@ -30,8 +31,8 @@ public class SmoothTrackingCamera extends SmoothCamera {
 		mSmootherRot = pSmootherRot;
 	}
 
-	public void setTracking(PhysicsConnector pChaseBody, ITrack pTracking, float pOffsetDeg) {
-		super.setChaseEntity(pChaseBody.getShape());
+	public void setTracking(IEntity pChaseBody, ITrack pTracking, float pOffsetDeg) {
+		super.setChaseEntity(pChaseBody);
 		mTrack = pTracking;
 		mChaseBody = pChaseBody;
 		mOffsetDeg = pOffsetDeg;

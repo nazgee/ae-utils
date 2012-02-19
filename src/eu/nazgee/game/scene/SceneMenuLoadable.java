@@ -29,7 +29,7 @@ abstract public class SceneMenuLoadable extends MenuScene implements ISceneLoada
 
 	@Override
 	public void loadResources(Engine e, Context c) {
-		reset();
+//		reset();
 		if (!mLoaded) {
 			loadResourcesOnce(e, c);
 			mLoaded = true;
