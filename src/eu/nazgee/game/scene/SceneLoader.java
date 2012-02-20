@@ -104,7 +104,6 @@ public class SceneLoader {
 							}
 							splash.unload();
 							mEngine.get().setScene(mLoadedScene);
-							mPleaseWaitScene.unload();
 						}
 					}
 				});
@@ -113,7 +112,6 @@ public class SceneLoader {
 					mListener.onSceneLoaded(mLoadedScene);
 				}
 				mEngine.get().setScene(mLoadedScene);
-				mPleaseWaitScene.unload();
 			}
 		}
 	}

@@ -67,6 +67,7 @@ abstract public class ScenePhysics extends SceneLoadable implements ContactListe
 		getPhysics().clearForces();
 		getPhysics().clearPhysicsConnectors();
 		unregisterUpdateHandler(getPhysics());
+		clearUpdateHandlers();
 		reset();
 	}
 
