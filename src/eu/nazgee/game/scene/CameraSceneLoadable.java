@@ -3,6 +3,7 @@ package eu.nazgee.game.scene;
 import org.andengine.engine.Engine;
 import org.andengine.engine.camera.Camera;
 import org.andengine.entity.scene.CameraScene;
+import org.andengine.entity.scene.Scene;
 import org.andengine.opengl.vbo.VertexBufferObjectManager;
 
 import android.content.Context;
@@ -24,12 +25,19 @@ abstract public class CameraSceneLoadable extends CameraScene implements ISceneL
 		mW = W;
 		mH = H;
 	}
-	public float getH() {
-		return mH;
+
+	/*=========================================================================
+	 * 							from ISceneLoadable
+	 *=======================================================================*/
+	@Override
+	public Scene load(final Engine e, Context c) {
+		return this;
 	}
 
-	public float getW() {
-		return mW;
+	@Override
+	public void unload() {
+		clearUpdateHandlers();
+		reset();
 	}
 
 	@Override
@@ -45,12 +53,22 @@ abstract public class CameraSceneLoadable extends CameraScene implements ISceneL
 			mLoaded = true;
 		}
 	}
+	// XXX after we quit the game once, this one never gets called :(
+	abstract protected void loadResourcesOnceStatic(Engine e, Context c);
+	abstract protected void loadResourcesOnce(Engine e, Context c);
 
-	@Override
+	/*=========================================================================
+	 * 							getters & setters
+	 *=======================================================================*/
 	public VertexBufferObjectManager getVertexBufferObjectManager() {
 		return mVertexBufferObjectManager;
 	}
 
-	abstract protected void loadResourcesOnceStatic(Engine e, Context c);
-	abstract protected void loadResourcesOnce(Engine e, Context c);
+	public float getH() {
+		return mH;
+	}
+
+	public float getW() {
+		return mW;
+	}
 }

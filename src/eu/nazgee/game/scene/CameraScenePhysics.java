@@ -55,6 +55,7 @@ abstract public class CameraScenePhysics extends CameraSceneLoadable implements 
 	 *=======================================================================*/
 	@Override
 	public Scene load(final Engine e, Context c) {
+		super.load(e, c);
 		mGroundBody = mPhysics.createBody(new BodyDef());
 		registerUpdateHandler(mPhysics);
 
@@ -63,9 +64,13 @@ abstract public class CameraScenePhysics extends CameraSceneLoadable implements 
 
 	@Override
 	public void unload() {
-		mPhysics.destroyBody(mGroundBody);
-		unregisterUpdateHandler(mPhysics);
-		reset();
+		getPhysics().destroyBody(mGroundBody);
+
+		getPhysics().clearForces();
+		getPhysics().clearPhysicsConnectors();
+		unregisterUpdateHandler(getPhysics());
+
+		super.unload();
 	}
 
 	/*=========================================================================

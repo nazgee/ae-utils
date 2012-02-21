@@ -54,6 +54,7 @@ abstract public class ScenePhysics extends SceneLoadable implements ContactListe
 	 *=======================================================================*/
 	@Override
 	public Scene load(final Engine e, Context c) {
+		super.load(e, c);
 		mGroundBody = mPhysics.createBody(new BodyDef());
 		registerUpdateHandler(mPhysics);
 
@@ -67,8 +68,8 @@ abstract public class ScenePhysics extends SceneLoadable implements ContactListe
 		getPhysics().clearForces();
 		getPhysics().clearPhysicsConnectors();
 		unregisterUpdateHandler(getPhysics());
-		clearUpdateHandlers();
-		reset();
+
+		super.unload();
 	}
 
 	/*=========================================================================

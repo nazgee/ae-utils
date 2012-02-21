@@ -8,7 +8,6 @@ import org.andengine.entity.scene.Scene;
 
 import android.app.Activity;
 import android.content.Context;
-
 import eu.nazgee.game.misc.ISceneLoadable;
 import eu.nazgee.game.ui.activity.IAsyncTasklet;
 import eu.nazgee.game.ui.activity.TaskletsRunner;

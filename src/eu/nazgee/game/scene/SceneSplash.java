@@ -40,21 +40,12 @@ public class SceneSplash extends SceneLoadable implements IOnSceneTouchListener,
 		setBackground(new Background(pColor));
 	}
 
-	@Override
-	public void loadResourcesOnceStatic(Engine e, Context c) {
-	}
-
-	@Override
-	public void loadResourcesOnce(Engine e, Context c) {
-		mTextLoading = new Text(getW() + 100, getH() / 2, mFont, "Loading...", getVertexBufferObjectManager());
-	}
-
-	protected void addSplashScreen(Sprite pSprite) {
-		mSprites.add(pSprite);
-	}
-
+	/*=========================================================================
+	 * 							from ISceneLoadable
+	 *=======================================================================*/
 	@Override
 	public Scene load(Engine e, Context c) {
+		super.load(e, c);
 		float logoTime = mTotalTime / (3 * mSprites.size() + 1) * 3;
 
 		for (int i = 0; i < mSprites.size(); i++) {
@@ -104,12 +95,27 @@ public class SceneSplash extends SceneLoadable implements IOnSceneTouchListener,
 	@Override
 	public void unload() {
 		detachChildren();
-		reset();
+		super.unload();
 	}
 
-	protected void setComplete(boolean pComplete) {
-		Log.d(getClass().getSimpleName(), "Splash screen setComplete(" + pComplete + ")");
-		this.mComplete = pComplete;
+	@Override
+	public void loadResourcesOnceStatic(Engine e, Context c) {
+	}
+
+	@Override
+	public void loadResourcesOnce(Engine e, Context c) {
+		mTextLoading = new Text(getW() + 100, getH() / 2, mFont, "Loading...", getVertexBufferObjectManager());
+	}
+
+	/*=========================================================================
+	 * 							getters & setters
+	 *=======================================================================*/
+	/**
+	 * Used to check if splashscreen is finished
+	 * @return true when splashscreen is complete
+	 */
+	public boolean isComplete() {
+		return mComplete;
 	}
 
 	/**
@@ -122,7 +128,7 @@ public class SceneSplash extends SceneLoadable implements IOnSceneTouchListener,
 				Log.d(getClass().getSimpleName(), "Splash screen finished");
 				return;
 			}
-
+			
 			try {
 				Thread.sleep(200, 0);
 			} catch (InterruptedException e) {
@@ -131,14 +137,34 @@ public class SceneSplash extends SceneLoadable implements IOnSceneTouchListener,
 		}
 	}
 
-	/**
-	 * Used to check if splashscreen is finished
-	 * @return true when splashscreen is complete
-	 */
-	public boolean isComplete() {
-		return mComplete;
+	protected void setComplete(boolean pComplete) {
+		Log.d(getClass().getSimpleName(), "Splash screen setComplete(" + pComplete + ")");
+		this.mComplete = pComplete;
 	}
 
+	protected void addSplashScreen(Sprite pSprite) {
+		mSprites.add(pSprite);
+	}
+	// ===========================================================
+	// Methods for/from SuperClass/Interfaces
+	// ===========================================================
+	@Override
+	public boolean onSceneTouchEvent(Scene pScene, TouchEvent pSceneTouchEvent) {
+		Log.d(getClass().getSimpleName(), "Someone is toching the screen while loading!");
+		return true;
+	}
+
+	@Override
+	public boolean onAreaTouched(TouchEvent pSceneTouchEvent,
+			ITouchArea pTouchArea, float pTouchAreaLocalX,
+			float pTouchAreaLocalY) {
+		Log.d(getClass().getSimpleName(), "Someone is poking the screen while loading!");
+		return true;
+	}
+
+	// ===========================================================
+	// Inner and Anonymous Classes
+	// ===========================================================
 	class LogoAttacher implements IEntityModifierListener {
 		private IEntity mEntity;
 		private Scene mScene;
@@ -166,19 +192,5 @@ public class SceneSplash extends SceneLoadable implements IOnSceneTouchListener,
 				mScene.attachChild(mEntity);
 			}
 		}
-	}
-
-	@Override
-	public boolean onSceneTouchEvent(Scene pScene, TouchEvent pSceneTouchEvent) {
-		Log.d(getClass().getSimpleName(), "Someone is toching the screen while loading!");
-		return true;
-	}
-
-	@Override
-	public boolean onAreaTouched(TouchEvent pSceneTouchEvent,
-			ITouchArea pTouchArea, float pTouchAreaLocalX,
-			float pTouchAreaLocalY) {
-		Log.d(getClass().getSimpleName(), "Someone is poking the screen while loading!");
-		return true;
 	}
 }

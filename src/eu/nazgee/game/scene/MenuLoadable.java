@@ -1,23 +1,26 @@
 package eu.nazgee.game.scene;
 
 import org.andengine.engine.Engine;
+import org.andengine.engine.camera.Camera;
 import org.andengine.entity.scene.Scene;
+import org.andengine.entity.scene.menu.MenuScene;
 import org.andengine.opengl.vbo.VertexBufferObjectManager;
 
 import android.content.Context;
 import eu.nazgee.game.misc.ISceneLoadable;
 
-abstract public class SceneLoadable extends Scene implements ISceneLoadable {
-	private float mW, mH;
-	private boolean mLoaded = false;
+abstract public class MenuLoadable extends MenuScene implements ISceneLoadable {
+	float mW, mH;
+	boolean mLoaded = false;
 	private static Boolean mLoadedStatic = new Boolean(false);
 	private final VertexBufferObjectManager mVertexBufferObjectManager;
 
-	public SceneLoadable(final VertexBufferObjectManager pVertexBufferObjectManager) {
-		this(0, 0, pVertexBufferObjectManager);
+	public MenuLoadable(Camera pCamera, final VertexBufferObjectManager pVertexBufferObjectManager) {
+		this(0, 0, pCamera, pVertexBufferObjectManager);
 	}
 
-	public SceneLoadable(float W, float H, final VertexBufferObjectManager pVertexBufferObjectManager) {
+	public MenuLoadable(float W, float H, Camera pCamera, final VertexBufferObjectManager pVertexBufferObjectManager) {
+		super(pCamera);
 		mVertexBufferObjectManager = pVertexBufferObjectManager;
 		mW = W;
 		mH = H;
