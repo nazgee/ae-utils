@@ -3,7 +3,6 @@ package eu.nazgee.game.scene;
 import org.andengine.engine.Engine;
 import org.andengine.entity.modifier.MoveXModifier;
 import org.andengine.entity.modifier.SequenceEntityModifier;
-import org.andengine.entity.scene.Scene;
 import org.andengine.entity.scene.background.Background;
 import org.andengine.entity.text.Text;
 import org.andengine.opengl.font.Font;
@@ -22,9 +21,8 @@ public class SceneLoading extends SceneLoadable {
 	}
 
 	@Override
-	public Scene load(Engine e, Context c) {
+	public void load(Engine e, Context c) {
 		mTextLoading.reset();
-		return this;
 	}
 
 	@Override

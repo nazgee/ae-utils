@@ -44,7 +44,7 @@ public class SceneSplash extends SceneLoadable implements IOnSceneTouchListener,
 	 * 							from ISceneLoadable
 	 *=======================================================================*/
 	@Override
-	public Scene load(Engine e, Context c) {
+	public void load(Engine e, Context c) {
 		super.load(e, c);
 		float logoTime = mTotalTime / (3 * mSprites.size() + 1) * 3;
 
@@ -89,7 +89,6 @@ public class SceneSplash extends SceneLoadable implements IOnSceneTouchListener,
 
 		setOnSceneTouchListener(this);
 		setOnAreaTouchListener(this);
-		return this;
 	}
 
 	@Override

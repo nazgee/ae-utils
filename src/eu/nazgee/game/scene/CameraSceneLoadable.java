@@ -7,12 +7,13 @@ import org.andengine.entity.scene.Scene;
 import org.andengine.opengl.vbo.VertexBufferObjectManager;
 
 import android.content.Context;
-import eu.nazgee.game.misc.ILoadableResources;
+import eu.nazgee.game.misc.ILoadableResourceScene;
 
-abstract public class CameraSceneLoadable extends CameraScene implements ILoadableResources {
+abstract public class CameraSceneLoadable extends CameraScene implements ILoadableResourceScene {
 	private float mW, mH;
-	private boolean mLoaded = false;
-	private static Boolean mLoadedStatic = new Boolean(false);
+	private Boolean mLoaded = new Boolean(false);
+	private boolean mResourcesLoaded = false;
+	private static Boolean mStaticResourcesLoaded = new Boolean(false);
 	private final VertexBufferObjectManager mVertexBufferObjectManager;
 
 	public CameraSceneLoadable(Camera pCamera, final VertexBufferObjectManager pVertexBufferObjectManager) {
@@ -30,27 +31,48 @@ abstract public class CameraSceneLoadable extends CameraScene implements ILoadab
 	 * 							from ISceneLoadable
 	 *=======================================================================*/
 	@Override
-	public Scene load(final Engine e, Context c) {
-		return this;
+	public Scene getScene() {
+		synchronized (mLoaded) {
+			if (!mLoaded.booleanValue())
+				throw new RuntimeException(getClass().getSimpleName() + "instance aquired without prior loading!");
+
+			return this;
+		}
+	}
+
+	@Override
+	public void load(final Engine e, Context c) {
+		synchronized (mLoaded) {
+			if (mLoaded.booleanValue())
+				throw new RuntimeException(getClass().getSimpleName() + "instance double loaded!");
+
+			mLoaded = true;
+		}
 	}
 
 	@Override
 	public void unload() {
-		clearUpdateHandlers();
-		reset();
+		synchronized (mLoaded) {
+			if (!mLoaded.booleanValue())
+				throw new RuntimeException(getClass().getSimpleName() + "instance double unloaded (or not loaded at all)!");
+
+			clearUpdateHandlers();
+			reset();
+			mLoaded = false;
+		}
 	}
 
 	@Override
 	public void loadResources(Engine e, Context c) {
-		synchronized (mLoadedStatic) {
-			if (mLoadedStatic.booleanValue() == false) {
+		synchronized (mStaticResourcesLoaded) {
+			if (mStaticResourcesLoaded.booleanValue() == false) {
 				loadResourcesOnceStatic(e, c);
-				mLoadedStatic = true;
+				mStaticResourcesLoaded = true;
 			}
 		}
-		if (!mLoaded) {
+		if (!mResourcesLoaded) {
 			loadResourcesOnce(e, c);
-			mLoaded = true;
+			mResourcesLoaded = true;
 		}
 	}
 	// XXX after we quit the game once, this one never gets called :(

@@ -8,7 +8,7 @@ import org.andengine.entity.scene.Scene;
 
 import android.app.Activity;
 import android.content.Context;
-import eu.nazgee.game.misc.ILoadableResources;
+import eu.nazgee.game.misc.ILoadableResourceScene;
 import eu.nazgee.game.ui.activity.IAsyncTasklet;
 import eu.nazgee.game.ui.activity.TaskletsRunner;
 
@@ -22,7 +22,7 @@ public class SceneLoader {
 		mLoadingScene.load(e, c);
 	}
 
-	public void loadScene(final ILoadableResources pScene, final Engine e, final Activity c, ISceneLoaderListener pListener) {
+	public void loadScene(final ILoadableResourceScene pScene, final Engine e, final Activity c, ISceneLoaderListener pListener) {
 		final SceneLoaderTasklet loader = new SceneLoaderTasklet(e, c, mLoadingScene, pScene, pListener);
 		c.runOnUiThread(new Runnable() {
 			@Override
@@ -56,7 +56,7 @@ public class SceneLoader {
 
 		private final ISceneLoaderListener mListener;
 		private final SceneLoadable mPleaseWaitScene;
-		private final ILoadableResources mLoaderToBeLoaded;
+		private final ILoadableResourceScene mLoaderToBeLoaded;
 		private volatile Scene mLoadedScene;
 
 		/**
@@ -66,7 +66,7 @@ public class SceneLoader {
 		 * @param pPleaseWaitScene will be unloaded, after pToBeLoaded will be loaded
 		 * @param pToBeLoaded scene that should be loaded
 		 */
-		public SceneLoaderTasklet(final Engine e, final Context c, SceneLoadable pPleaseWaitScene, ILoadableResources pToBeLoaded, ISceneLoaderListener pListener) {
+		public SceneLoaderTasklet(final Engine e, final Context c, SceneLoadable pPleaseWaitScene, ILoadableResourceScene pToBeLoaded, ISceneLoaderListener pListener) {
 			mEngine = new WeakReference<Engine>(e);
 			mContext = new WeakReference<Context>(c);
 
@@ -83,7 +83,8 @@ public class SceneLoader {
 		@Override
 		public void workToDo() {
 			mLoaderToBeLoaded.loadResources(mEngine.get(), mContext.get());
-			mLoadedScene = mLoaderToBeLoaded.load(mEngine.get(), mContext.get());
+			mLoaderToBeLoaded.load(mEngine.get(), mContext.get());
+			mLoadedScene = mLoaderToBeLoaded.getScene();
 		}
 		@Override
 		public void onComplete() {

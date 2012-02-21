@@ -2,7 +2,6 @@ package eu.nazgee.game.scene;
 
 import org.andengine.engine.Engine;
 import org.andengine.engine.camera.Camera;
-import org.andengine.entity.scene.Scene;
 import org.andengine.extension.physics.box2d.FixedStepPhysicsWorld;
 import org.andengine.extension.physics.box2d.PhysicsConnector;
 import org.andengine.extension.physics.box2d.PhysicsWorld;
@@ -54,12 +53,10 @@ abstract public class CameraScenePhysics extends CameraSceneLoadable implements 
 	 * 							from SceneLoadable
 	 *=======================================================================*/
 	@Override
-	public Scene load(final Engine e, Context c) {
+	public void load(final Engine e, Context c) {
 		super.load(e, c);
 		mGroundBody = mPhysics.createBody(new BodyDef());
 		registerUpdateHandler(mPhysics);
-
-		return this;
 	}
 
 	@Override
