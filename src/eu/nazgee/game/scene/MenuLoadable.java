@@ -7,9 +7,9 @@ import org.andengine.entity.scene.menu.MenuScene;
 import org.andengine.opengl.vbo.VertexBufferObjectManager;
 
 import android.content.Context;
-import eu.nazgee.game.misc.ISceneLoadable;
+import eu.nazgee.game.misc.ILoadableResources;
 
-abstract public class MenuLoadable extends MenuScene implements ISceneLoadable {
+abstract public class MenuLoadable extends MenuScene implements ILoadableResources {
 	float mW, mH;
 	boolean mLoaded = false;
 	private static Boolean mLoadedStatic = new Boolean(false);

@@ -7,9 +7,9 @@ import org.andengine.entity.scene.Scene;
 import org.andengine.opengl.vbo.VertexBufferObjectManager;
 
 import android.content.Context;
-import eu.nazgee.game.misc.ISceneLoadable;
+import eu.nazgee.game.misc.ILoadableResources;
 
-abstract public class CameraSceneLoadable extends CameraScene implements ISceneLoadable {
+abstract public class CameraSceneLoadable extends CameraScene implements ILoadableResources {
 	private float mW, mH;
 	private boolean mLoaded = false;
 	private static Boolean mLoadedStatic = new Boolean(false);
