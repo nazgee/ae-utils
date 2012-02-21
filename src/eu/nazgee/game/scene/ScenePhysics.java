@@ -1,6 +1,7 @@
 package eu.nazgee.game.scene;
 
 import org.andengine.engine.Engine;
+import org.andengine.entity.IEntity;
 import org.andengine.extension.physics.box2d.FixedStepPhysicsWorld;
 import org.andengine.extension.physics.box2d.PhysicsConnector;
 import org.andengine.extension.physics.box2d.PhysicsWorld;
@@ -19,6 +20,7 @@ import com.badlogic.gdx.physics.box2d.ContactListener;
 import com.badlogic.gdx.physics.box2d.Manifold;
 
 import eu.nazgee.game.primitives.GridDouble;
+import eu.nazgee.game.utils.debugdraw.Box2dDebugRenderer;
 
 abstract public class ScenePhysics extends SceneLoadable implements ContactListener {
 	private Body mGroundBody;
@@ -136,18 +138,23 @@ abstract public class ScenePhysics extends SceneLoadable implements ContactListe
 	/*=========================================================================
 	 * 							helpers
 	 *=======================================================================*/
-	
+	protected void attachDebugRenderer(int zindex) {
+		IEntity debugrenderrer = new Box2dDebugRenderer(getPhysics(), getVertexBufferObjectManager());
+		this.attachChild(debugrenderrer);
+		debugrenderrer.setZIndex(zindex);
+	}
+
 	protected void attachDebugGrid(int pX, int pY, int pW, int pH, int pGridSize, float pSubgridDivisor, int zindex, final VertexBufferObjectManager pVertexBufferObjectManager) {
 		detachDebugGrid();
 		mDebugGrid = new GridDouble(pX, pY, pW, pH, pGridSize, pGridSize, pSubgridDivisor, new Color(1, 1, 1, 0.5f), new Color(0, 0, 1, 0.4f), pVertexBufferObjectManager);
 		reattachDebugGrid();
 		sortChildren(false);
 	}
-	
+
 	protected void detachDebugGrid() {
 		detachChild(mDebugGrid);
 	}
-	
+
 	protected void reattachDebugGrid() {
 		if (mDebugGrid != null)
 			attachChild(mDebugGrid); 
