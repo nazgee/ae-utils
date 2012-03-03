@@ -1,6 +1,7 @@
 package eu.nazgee.game.utils.scene;
 
 import org.andengine.engine.Engine;
+import org.andengine.entity.modifier.IEntityModifier;
 import org.andengine.entity.modifier.MoveXModifier;
 import org.andengine.entity.modifier.SequenceEntityModifier;
 import org.andengine.entity.scene.background.Background;
@@ -14,6 +15,7 @@ import android.content.Context;
 public class SceneLoading extends SceneLoadable {
 	private Text mTextLoading;
 	private final Font mFont;
+	private IEntityModifier mMod;
 	public SceneLoading(float W, float H, final Font pFont, final VertexBufferObjectManager pVertexBufferObjectManager) {
 		super(W, H, pVertexBufferObjectManager);
 		mFont = pFont;
@@ -23,6 +25,8 @@ public class SceneLoading extends SceneLoadable {
 	@Override
 	public void load(Engine e, Context c) {
 		mTextLoading.reset();
+		mTextLoading.setPosition(getW(), getH() / 2);
+		mMod.reset();
 	}
 
 	@Override
@@ -31,14 +35,14 @@ public class SceneLoading extends SceneLoadable {
 
 	@Override
 	public void loadResourcesOnce(Engine e, Context c) {
-		mTextLoading = new Text(getW() + 100, getH() / 2, mFont,
+		mTextLoading = new Text(getW(), getH() / 2, mFont,
 				"Loading...", getVertexBufferObjectManager());
-		
-		final float loadingHalfW = mTextLoading.getWidth() / 2;
-		mTextLoading.registerEntityModifier(new SequenceEntityModifier(
-				new MoveXModifier(0.3f, getW(), getW() / 2 - loadingHalfW, EaseExponentialOut.getInstance())));
-
 		this.attachChild(mTextLoading);
+
+		final float loadingHalfW = mTextLoading.getWidth() / 2;
+		mMod = new SequenceEntityModifier(
+				new MoveXModifier(0.5f, getW(), getW() / 2 - loadingHalfW, EaseExponentialOut.getInstance()));
+		mTextLoading.registerEntityModifier(mMod);
 	}
 
 	@Override

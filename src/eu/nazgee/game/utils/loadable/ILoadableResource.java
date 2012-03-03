@@ -6,4 +6,5 @@ import android.content.Context;
 
 public interface ILoadableResource extends ILoadable {
 	public void loadResources(final Engine e, final Context c);
+	public boolean isResourceLoaded();
 }

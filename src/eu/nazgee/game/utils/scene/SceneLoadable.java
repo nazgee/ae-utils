@@ -30,9 +30,7 @@ abstract public class SceneLoadable extends Scene implements ILoadableResourceSc
 	@Override
 	public Scene getScene() {
 		synchronized (mLoaded) {
-			if (!mLoaded.booleanValue())
-				throw new RuntimeException(getClass().getSimpleName() + "instance aquired without prior loading!");
-
+			assertLoaded(true);
 			return this;
 		}
 	}
@@ -40,22 +38,18 @@ abstract public class SceneLoadable extends Scene implements ILoadableResourceSc
 	@Override
 	public void load(final Engine e, Context c) {
 		synchronized (mLoaded) {
-			if (mLoaded.booleanValue())
-				throw new RuntimeException(getClass().getSimpleName() + "instance double loaded!");
-
-			mLoaded = true;
+			assertLoaded(false);
+			setLoaded(true);
 		}
 	}
 
 	@Override
 	public void unload() {
 		synchronized (mLoaded) {
-			if (!mLoaded.booleanValue())
-				throw new RuntimeException(getClass().getSimpleName() + "instance double unloaded (or not loaded at all)!");
-
+			assertLoaded(true);
 			clearUpdateHandlers();
 			reset();
-			mLoaded = false;
+			setLoaded(false);
 		}
 	}
 
@@ -67,15 +61,40 @@ abstract public class SceneLoadable extends Scene implements ILoadableResourceSc
 				mStaticResourcesLoaded = true;
 			}
 		}
-		if (!mResourcesLoaded) {
+		if (!isResourceLoaded()) {
 			loadResourcesOnce(e, c);
-			mResourcesLoaded = true;
+			setResourceLoaded(true);
 		}
 	}
+
+	@Override
+	public boolean isLoaded() {
+		return mLoaded.booleanValue();
+	}
+
+	@Override
+	public boolean isResourceLoaded() {
+		return mResourcesLoaded;
+	}
+
 	// XXX after we quit the game once, this one never gets called :(
 	abstract protected void loadResourcesOnceStatic(Engine e, Context c);
 	abstract protected void loadResourcesOnce(Engine e, Context c);
+	// ===========================================================
+	// Inner and Anonymous Classes
+	// ===========================================================
+	protected void setLoaded(boolean pValue) {
+		mLoaded = pValue;
+	}
 
+	protected void setResourceLoaded(boolean pValue) {
+		mResourcesLoaded = pValue;
+	}
+
+	protected void assertLoaded(boolean pValue) {
+		if (isLoaded() != pValue)
+			throw new RuntimeException(getClass().getSimpleName() + " loaded != " + pValue);
+	}
 	/*=========================================================================
 	 * 							getters & setters
 	 *=======================================================================*/
