@@ -47,11 +47,11 @@ public class ResourceLoader implements ILoadableResource {
 	public void load(Engine e, Context c) {
 		synchronized (mLoaded) {
 			assertLoaded(false);
-			if (getLoadingHandler() != null) {
-				getLoadingHandler().onLoad(e, c);
-			}
 			for (ILoadableResource res : mResources) {
 				res.load(e, c);
+			}
+			if (getLoadingHandler() != null) {
+				getLoadingHandler().onLoad(e, c);
 			}
 			setLoaded(true);
 		}

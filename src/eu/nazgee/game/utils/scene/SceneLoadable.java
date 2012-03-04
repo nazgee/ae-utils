@@ -23,10 +23,13 @@ abstract public class SceneLoadable extends Scene implements ILoadableResourceSc
 		mW = W;
 		mH = H;
 	}
-
+	protected ResourceLoaderScene getLoader() {
+		return mLoader;
+	}
 	/*=========================================================================
 	 * 							from ILoadableResourceScene
 	 *=======================================================================*/
+
 	@Override
 	public Scene getScene() {
 		return mLoader.getScene();

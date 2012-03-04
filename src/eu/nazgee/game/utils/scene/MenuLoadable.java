@@ -26,7 +26,9 @@ abstract public class MenuLoadable extends MenuScene implements ILoadableResourc
 		mW = W;
 		mH = H;
 	}
-
+	protected ResourceLoaderScene getLoader() {
+		return mLoader;
+	}
 	/*=========================================================================
 	 * 							from ILoadableResourceScene
 	 *=======================================================================*/

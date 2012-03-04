@@ -27,7 +27,9 @@ abstract public class CameraSceneLoadable extends CameraScene implements ILoadab
 		mW = W;
 		mH = H;
 	}
-
+	protected ResourceLoaderScene getLoader() {
+		return mLoader;
+	}
 	/*=========================================================================
 	 * 							from ILoadableResourceScene
 	 *=======================================================================*/
