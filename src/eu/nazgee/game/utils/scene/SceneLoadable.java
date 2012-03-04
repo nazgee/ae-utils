@@ -6,12 +6,12 @@ import org.andengine.opengl.vbo.VertexBufferObjectManager;
 
 import android.content.Context;
 import eu.nazgee.game.utils.loadable.ILoadableResourceScene;
-import eu.nazgee.game.utils.loadable.ResourceLoaderScene;
-import eu.nazgee.game.utils.loadable.IResourceLoadingHandlerScene;
+import eu.nazgee.game.utils.loadable.LoaderResourceScene;
+import eu.nazgee.game.utils.loadable.ILoadingHandlerResourceScene;
 
-abstract public class SceneLoadable extends Scene implements ILoadableResourceScene, IResourceLoadingHandlerScene {
+abstract public class SceneLoadable extends Scene implements ILoadableResourceScene, ILoadingHandlerResourceScene {
 	private float mW, mH;
-	final private ResourceLoaderScene mLoader = new ResourceLoaderScene(this);
+	final private LoaderResourceScene mLoader = new LoaderResourceScene(this);
 	private final VertexBufferObjectManager mVertexBufferObjectManager;
 
 	public SceneLoadable(final VertexBufferObjectManager pVertexBufferObjectManager) {
@@ -23,7 +23,7 @@ abstract public class SceneLoadable extends Scene implements ILoadableResourceSc
 		mW = W;
 		mH = H;
 	}
-	protected ResourceLoaderScene getLoader() {
+	protected LoaderResourceScene getLoader() {
 		return mLoader;
 	}
 	/*=========================================================================

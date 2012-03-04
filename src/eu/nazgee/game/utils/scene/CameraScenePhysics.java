@@ -50,7 +50,7 @@ abstract public class CameraScenePhysics extends CameraSceneLoadable implements 
 		return mPhysics;
 	}
 	/*=========================================================================
-	 * 							from SceneLoadable
+	 * 							from IResourceLoadingHandlerScene
 	 *=======================================================================*/
 	@Override
 	public void onLoadResources(Engine e, Context c) {

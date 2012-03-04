@@ -2,10 +2,10 @@ package eu.nazgee.game.utils.loadable;
 
 import org.andengine.entity.scene.Scene;
 
-public class ResourceLoaderScene extends ResourceLoader implements ILoadableResourceScene {
+public class LoaderResourceScene extends LoaderResource implements ILoadableResourceScene {
 
-	private final IResourceLoadingHandlerScene mLoadingHandler;
-	public ResourceLoaderScene(IResourceLoadingHandlerScene pLoadingHandler) {
+	private final ILoadingHandlerResourceScene mLoadingHandler;
+	public LoaderResourceScene(ILoadingHandlerResourceScene pLoadingHandler) {
 		super(pLoadingHandler);
 		mLoadingHandler = pLoadingHandler;
 	}

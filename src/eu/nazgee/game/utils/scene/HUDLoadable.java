@@ -7,12 +7,12 @@ import org.andengine.opengl.vbo.VertexBufferObjectManager;
 
 import android.content.Context;
 import eu.nazgee.game.utils.loadable.ILoadableResourceScene;
-import eu.nazgee.game.utils.loadable.ResourceLoaderScene;
-import eu.nazgee.game.utils.loadable.IResourceLoadingHandlerScene;
+import eu.nazgee.game.utils.loadable.LoaderResourceScene;
+import eu.nazgee.game.utils.loadable.ILoadingHandlerResourceScene;
 
-abstract public class HUDLoadable extends HUD implements ILoadableResourceScene, IResourceLoadingHandlerScene {
+abstract public class HUDLoadable extends HUD implements ILoadableResourceScene, ILoadingHandlerResourceScene {
 	float mW, mH;
-	final private ResourceLoaderScene mLoader = new ResourceLoaderScene(this);
+	final private LoaderResourceScene mLoader = new LoaderResourceScene(this);
 	private final VertexBufferObjectManager mVertexBufferObjectManager;
 
 	public HUDLoadable(final VertexBufferObjectManager pVertexBufferObjectManager) {
@@ -25,7 +25,7 @@ abstract public class HUDLoadable extends HUD implements ILoadableResourceScene,
 		mW = W;
 		mH = H;
 	}
-	protected ResourceLoaderScene getLoader() {
+	protected LoaderResourceScene getLoader() {
 		return mLoader;
 	}
 	/*=========================================================================

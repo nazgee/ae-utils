@@ -8,18 +8,17 @@ import eu.nazgee.game.utils.misc.Reversed;
 
 import android.content.Context;
 
-public class ResourceLoader implements ILoadableResource {
+public class Loader implements ILoadable {
 	// ===========================================================
 	// Fields
 	// ===========================================================
-	private IResourceLoadingHandler mLoadingHandler;
-	private LinkedList<ILoadableResource> mResources = new LinkedList<ILoadableResource>();
+	private ILoadingHandlerResource mLoadingHandler;
+	protected LinkedList<ILoadable> mResources = new LinkedList<ILoadable>();
 	protected Boolean mLoaded = new Boolean(false);
-	protected boolean mResourcesLoaded = false;
 	// ===========================================================
 	// Constructors
 	// ===========================================================
-	public ResourceLoader(IResourceLoadingHandler pLoadingHandler) {
+	public Loader(ILoadingHandlerResource pLoadingHandler) {
 		setLoadingHandler(pLoadingHandler);
 	}
 	// ===========================================================
@@ -33,11 +32,11 @@ public class ResourceLoader implements ILoadableResource {
 		mResources.add(pRes);
 	}
 
-	public IResourceLoadingHandler getLoadingHandler() {
+	public ILoadingHandlerResource getLoadingHandler() {
 		return mLoadingHandler;
 	}
 
-	public void setLoadingHandler(IResourceLoadingHandler pHandler) {
+	public void setLoadingHandler(ILoadingHandlerResource pHandler) {
 		mLoadingHandler = pHandler;
 	}
 	// ===========================================================
@@ -47,7 +46,7 @@ public class ResourceLoader implements ILoadableResource {
 	public void load(Engine e, Context c) {
 		synchronized (mLoaded) {
 			assertLoaded(false);
-			for (ILoadableResource res : mResources) {
+			for (ILoadable res : mResources) {
 				res.load(e, c);
 			}
 			if (getLoadingHandler() != null) {
@@ -65,23 +64,11 @@ public class ResourceLoader implements ILoadableResource {
 				getLoadingHandler().onUnload();
 			}
 
-			Reversed<ILoadableResource> rev = new Reversed<ILoadableResource>(mResources);
-			for (ILoadableResource res : rev) {
+			Reversed<ILoadable> rev = new Reversed<ILoadable>(mResources);
+			for (ILoadable res : rev) {
 				res.unload();
 			}
 			setLoaded(false);
-		}
-	}
-	@Override
-	public void loadResources(Engine e, Context c) {
-		if (!isResourceLoaded()) {
-			for (ILoadableResource res : mResources) {
-				res.loadResources(e, c);
-			}
-			if (getLoadingHandler() != null) {
-				getLoadingHandler().onLoadResources(e, c);
-			}
-			setResourceLoaded(true);
 		}
 	}
 
@@ -90,20 +77,11 @@ public class ResourceLoader implements ILoadableResource {
 		return mLoaded.booleanValue();
 	}
 
-	@Override
-	public boolean isResourceLoaded() {
-		return mResourcesLoaded;
-	}
-
 	// ===========================================================
 	// Inner and Anonymous Classes
 	// ===========================================================
 	protected void setLoaded(boolean pValue) {
 		mLoaded = pValue;
-	}
-
-	protected void setResourceLoaded(boolean pValue) {
-		mResourcesLoaded = pValue;
 	}
 
 	protected void assertLoaded(boolean pValue) {
