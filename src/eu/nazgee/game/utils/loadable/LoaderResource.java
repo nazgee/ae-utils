@@ -3,6 +3,7 @@ package eu.nazgee.game.utils.loadable;
 import org.andengine.engine.Engine;
 
 import android.content.Context;
+import android.util.Log;
 
 public class LoaderResource extends Loader implements ILoadableResource {
 	// ===========================================================
@@ -44,9 +45,11 @@ public class LoaderResource extends Loader implements ILoadableResource {
 	public void loadResources(Engine e, Context c) {
 		if (!isResourceLoaded()) {
 			for (ILoadable res : mResources) {
+				Log.d(getClass().getSimpleName(), "About to loadResources()" + res.toString());
 				((ILoadableResource)res).loadResources(e, c);
 			}
 			if (getLoadingHandler() != null) {
+				Log.d(getClass().getSimpleName(), "About to onLoadResources()" + getLoadingHandler().toString());
 				getLoadingHandler().onLoadResources(e, c);
 			}
 			setResourceLoaded(true);

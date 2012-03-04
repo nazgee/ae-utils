@@ -7,6 +7,7 @@ import org.andengine.engine.Engine;
 import eu.nazgee.game.utils.misc.Reversed;
 
 import android.content.Context;
+import android.util.Log;
 
 public class Loader implements ILoadable {
 	// ===========================================================
@@ -47,9 +48,11 @@ public class Loader implements ILoadable {
 		synchronized (mLoaded) {
 			assertLoaded(false);
 			for (ILoadable res : mResources) {
+				Log.d(getClass().getSimpleName(), "About to load() " + res.toString());
 				res.load(e, c);
 			}
 			if (getLoadingHandler() != null) {
+				Log.d(getClass().getSimpleName(), "About to onLoad() " + getLoadingHandler().toString());
 				getLoadingHandler().onLoad(e, c);
 			}
 			setLoaded(true);
@@ -61,11 +64,13 @@ public class Loader implements ILoadable {
 			assertLoaded(true);
 
 			if (getLoadingHandler() != null) {
+				Log.d(getClass().getSimpleName(), "About to onUnload() " + getLoadingHandler().toString());
 				getLoadingHandler().onUnload();
 			}
 
 			Reversed<ILoadable> rev = new Reversed<ILoadable>(mResources);
 			for (ILoadable res : rev) {
+				Log.d(getClass().getSimpleName(), "About to unload()" + res.toString());
 				res.unload();
 			}
 			setLoaded(false);
