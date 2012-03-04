@@ -8,6 +8,7 @@ import org.andengine.entity.scene.Scene;
 
 import android.app.Activity;
 import android.content.Context;
+import android.util.Log;
 import eu.nazgee.game.utils.activity.IAsyncTasklet;
 import eu.nazgee.game.utils.activity.TaskletsRunner;
 import eu.nazgee.game.utils.loadable.ILoadableResourceScene;
@@ -89,6 +90,7 @@ public class SceneLoader {
 		@Override
 		public void onComplete() {
 			if (mPleaseWaitScene instanceof SceneSplash) {
+				Log.d(getClass().getSimpleName(), "SceneSplash loaded, waiting for end");
 				final SceneSplash splash = (SceneSplash) mPleaseWaitScene;
 
 				splash.registerUpdateHandler(new IUpdateHandler() {
@@ -108,9 +110,12 @@ public class SceneLoader {
 					}
 				});
 			} else {
+				Log.d(getClass().getSimpleName(), "Scene loaded");
 				if (mListener != null) {
+					Log.d(getClass().getSimpleName(), "Calling listener");
 					mListener.onSceneLoaded(mLoadedScene);
 				}
+				Log.d(getClass().getSimpleName(), "Setting loaded scene as active");
 				mEngine.get().setScene(mLoadedScene);
 			}
 		}

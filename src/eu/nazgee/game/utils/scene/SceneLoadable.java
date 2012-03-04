@@ -6,12 +6,12 @@ import org.andengine.opengl.vbo.VertexBufferObjectManager;
 
 import android.content.Context;
 import eu.nazgee.game.utils.loadable.ILoadableResourceScene;
+import eu.nazgee.game.utils.loadable.ResourceLoaderScene;
+import eu.nazgee.game.utils.loadable.IResourceLoadingHandlerScene;
 
-abstract public class SceneLoadable extends Scene implements ILoadableResourceScene {
+abstract public class SceneLoadable extends Scene implements ILoadableResourceScene, IResourceLoadingHandlerScene {
 	private float mW, mH;
-	private Boolean mLoaded = new Boolean(false);
-	private boolean mResourcesLoaded = false;
-	private static Boolean mStaticResourcesLoaded = new Boolean(false);
+	final private ResourceLoaderScene mLoader = new ResourceLoaderScene(this);
 	private final VertexBufferObjectManager mVertexBufferObjectManager;
 
 	public SceneLoadable(final VertexBufferObjectManager pVertexBufferObjectManager) {
@@ -25,75 +25,41 @@ abstract public class SceneLoadable extends Scene implements ILoadableResourceSc
 	}
 
 	/*=========================================================================
-	 * 							from ISceneLoadable
+	 * 							from ILoadableResourceScene
 	 *=======================================================================*/
 	@Override
 	public Scene getScene() {
-		synchronized (mLoaded) {
-			assertLoaded(true);
-			return this;
-		}
+		return mLoader.getScene();
 	}
 
 	@Override
-	public void load(final Engine e, Context c) {
-		synchronized (mLoaded) {
-			assertLoaded(false);
-			setLoaded(true);
-		}
+	final public void load(final Engine e, Context c) {
+		mLoader.load(e, c);
 	}
 
 	@Override
-	public void unload() {
-		synchronized (mLoaded) {
-			assertLoaded(true);
-			clearUpdateHandlers();
-			reset();
-			setLoaded(false);
-		}
+	final public void unload() {
+		mLoader.unload();
 	}
 
 	@Override
-	public void loadResources(Engine e, Context c) {
-		synchronized (mStaticResourcesLoaded) {
-			if (mStaticResourcesLoaded.booleanValue() == false) {
-				loadResourcesOnceStatic(e, c);
-				mStaticResourcesLoaded = true;
-			}
-		}
-		if (!isResourceLoaded()) {
-			loadResourcesOnce(e, c);
-			setResourceLoaded(true);
-		}
+	final public void loadResources(Engine e, Context c) {
+		mLoader.loadResources(e, c);
 	}
 
 	@Override
-	public boolean isLoaded() {
-		return mLoaded.booleanValue();
+	final public boolean isLoaded() {
+		return mLoader.isLoaded();
 	}
 
 	@Override
-	public boolean isResourceLoaded() {
-		return mResourcesLoaded;
+	final public boolean isResourceLoaded() {
+		return mLoader.isResourceLoaded();
 	}
 
-	// XXX after we quit the game once, this one never gets called :(
-	abstract protected void loadResourcesOnceStatic(Engine e, Context c);
-	abstract protected void loadResourcesOnce(Engine e, Context c);
-	// ===========================================================
-	// Inner and Anonymous Classes
-	// ===========================================================
-	protected void setLoaded(boolean pValue) {
-		mLoaded = pValue;
-	}
-
-	protected void setResourceLoaded(boolean pValue) {
-		mResourcesLoaded = pValue;
-	}
-
-	protected void assertLoaded(boolean pValue) {
-		if (isLoaded() != pValue)
-			throw new RuntimeException(getClass().getSimpleName() + " loaded != " + pValue);
+	@Override
+	public Scene onGetScene() {
+		return this;
 	}
 	/*=========================================================================
 	 * 							getters & setters

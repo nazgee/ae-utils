@@ -21,20 +21,11 @@ public class SceneLoading extends SceneLoadable {
 		mFont = pFont;
 		setBackground(new Background(0, 0, 0));
 	}
-
+	/*=========================================================================
+	 * 							from IResourceLoadingHandlerScene
+	 *=======================================================================*/
 	@Override
-	public void load(Engine e, Context c) {
-		mTextLoading.reset();
-		mTextLoading.setPosition(getW(), getH() / 2);
-		mMod.reset();
-	}
-
-	@Override
-	public void unload() {
-	}
-
-	@Override
-	public void loadResourcesOnce(Engine e, Context c) {
+	public void onLoadResources(Engine e, Context c) {
 		mTextLoading = new Text(getW(), getH() / 2, mFont,
 				"Loading...", getVertexBufferObjectManager());
 		this.attachChild(mTextLoading);
@@ -46,6 +37,13 @@ public class SceneLoading extends SceneLoadable {
 	}
 
 	@Override
-	public void loadResourcesOnceStatic(Engine e, Context c) {
+	public void onLoad(Engine e, Context c) {
+		mTextLoading.reset();
+		mTextLoading.setPosition(getW(), getH() / 2);
+		mMod.reset();
+	}
+
+	@Override
+	public void onUnload() {
 	}
 }

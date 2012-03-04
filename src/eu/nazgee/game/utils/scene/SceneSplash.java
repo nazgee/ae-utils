@@ -41,11 +41,15 @@ public class SceneSplash extends SceneLoadable implements IOnSceneTouchListener,
 	}
 
 	/*=========================================================================
-	 * 							from ISceneLoadable
+	 * 							from IResourceLoadingHandlerScene
 	 *=======================================================================*/
 	@Override
-	public void load(Engine e, Context c) {
-		super.load(e, c);
+	public void onLoadResources(Engine e, Context c) {
+		mTextLoading = new Text(getW() + 100, getH() / 2, mFont, "Loading...", getVertexBufferObjectManager());
+	}
+
+	@Override
+	public void onLoad(Engine e, Context c) {
 		float logoTime = mTotalTime / (3 * mSprites.size() + 1) * 3;
 
 		for (int i = 0; i < mSprites.size(); i++) {
@@ -92,20 +96,9 @@ public class SceneSplash extends SceneLoadable implements IOnSceneTouchListener,
 	}
 
 	@Override
-	public void unload() {
+	public void onUnload() {
 		detachChildren();
-		super.unload();
 	}
-
-	@Override
-	public void loadResourcesOnceStatic(Engine e, Context c) {
-	}
-
-	@Override
-	public void loadResourcesOnce(Engine e, Context c) {
-		mTextLoading = new Text(getW() + 100, getH() / 2, mFont, "Loading...", getVertexBufferObjectManager());
-	}
-
 	/*=========================================================================
 	 * 							getters & setters
 	 *=======================================================================*/
