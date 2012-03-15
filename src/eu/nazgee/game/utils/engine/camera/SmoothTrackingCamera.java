@@ -72,6 +72,7 @@ public class SmoothTrackingCamera extends SmoothCamera {
 		float deltaDeg = limitToMaxDeg(dDeg, pSecondsElapsed);
 		// Set X-Y rotation
 		this.setRotation(currDeg - deltaDeg);
+		this.setCameraSceneRotation(0);
 		
 //		Log.d(getClass().getSimpleName(), "onUpdate maxX=" + getMaxVelocityX() + "maxY=" + getMaxVelocityY());
 		Vector2Pool.recycle(track);	
