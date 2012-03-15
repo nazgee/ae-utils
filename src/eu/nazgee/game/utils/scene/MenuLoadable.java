@@ -14,7 +14,7 @@ import eu.nazgee.game.utils.loadable.ILoadingHandlerResourceScene;
 abstract public class MenuLoadable extends MenuScene implements ILoadableResourceScene, ILoadingHandlerResourceScene {
 	float mW, mH;
 	final private LoaderResourceScene mLoader = new LoaderResourceScene(this);
-	private final VertexBufferObjectManager mVertexBufferObjectManager;
+	private VertexBufferObjectManager mVertexBufferObjectManager;
 
 	public MenuLoadable(Camera pCamera, final VertexBufferObjectManager pVertexBufferObjectManager) {
 		this(0, 0, pCamera, pVertexBufferObjectManager);
@@ -39,6 +39,7 @@ abstract public class MenuLoadable extends MenuScene implements ILoadableResourc
 
 	@Override
 	final public void load(final Engine e, Context c) {
+		setVertexBufferObjectManager(e.getVertexBufferObjectManager());
 		mLoader.load(e, c);
 	}
 
@@ -71,6 +72,10 @@ abstract public class MenuLoadable extends MenuScene implements ILoadableResourc
 	 *=======================================================================*/
 	public VertexBufferObjectManager getVertexBufferObjectManager() {
 		return mVertexBufferObjectManager;
+	}
+
+	public void setVertexBufferObjectManager(VertexBufferObjectManager pVertexBufferObjectManager) {
+		mVertexBufferObjectManager = pVertexBufferObjectManager;
 	}
 
 	public float getH() {
