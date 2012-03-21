@@ -26,10 +26,11 @@ abstract public class SceneTextmenu extends MenuLoadable {
 		return mFont;
 	}
 
-	public void addMenuEntry(String pText, int pVal, final Color pSelected, final Color pUnselected, VertexBufferObjectManager pVBOM) {
+	public IMenuItem addMenuEntry(String pText, int pVal, final Color pSelected, final Color pUnselected, VertexBufferObjectManager pVBOM) {
 		final IMenuItem menuItem = new ColorMenuItemDecorator(
 				new TextMenuItem(pVal, getFont(), pText, pVBOM), pSelected, pUnselected);
 		menuItem.setBlendFunction(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA);
 		addMenuItem(menuItem);
+		return menuItem;
 	}
 }
