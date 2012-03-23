@@ -1,14 +1,13 @@
 package eu.nazgee.game.utils.misc;
 
-import org.andengine.engine.handler.IUpdateHandler;
 import org.andengine.entity.IEntity;
 import org.andengine.entity.modifier.IEntityModifier;
 import org.andengine.entity.modifier.MoveModifier;
 import org.andengine.util.modifier.ease.IEaseFunction;
 
-public abstract class IdleEntityHider<T extends IEntity> implements IUpdateHandler{
+public abstract class IdleEntityHider<T extends IEntity> {
 	private boolean mShown;
-	private final T mHideThis;
+	protected final T mHideThis;
 	private final float hiddenX;
 	private final float hiddenY;
 	private final float shownX;
@@ -35,30 +34,26 @@ public abstract class IdleEntityHider<T extends IEntity> implements IUpdateHandl
 	 */
 	abstract protected boolean keepShowing(T pItem);
 
-	@Override
-	public void onUpdate(float pSecondsElapsed) {
-		if (mShown != keepShowing(mHideThis)) {
-			float toX;
-			float toY;
-			if (keepShowing(mHideThis)) {
-				toX = shownX;
-				toY = shownY;
-				mShown = true;
-			} else {
-				toX = hiddenX;
-				toY = hiddenY;
-				mShown = false;
-			}
-
-			mHideThis.unregisterEntityModifier(mHider);
-			mHider = new MoveModifier(mDuration,
-					mHideThis.getX(), toX,
-					mHideThis.getY(), toY, mEasing);
-			mHider.setAutoUnregisterWhenFinished(true);
-			mHideThis.registerEntityModifier(mHider);
-		}
+	protected void hide() {
+		move(hiddenX, hiddenY);
+		mShown = false;
 	}
-	@Override
-	public void reset() {
+
+	protected void show() {
+		move(shownX, shownY);
+		mShown = true;
+	}
+
+	protected void move(final float toX, final float toY) {
+		mHideThis.unregisterEntityModifier(mHider);
+		mHider = new MoveModifier(mDuration,
+				mHideThis.getX(), toX,
+				mHideThis.getY(), toY, mEasing);
+		mHider.setAutoUnregisterWhenFinished(false);
+		mHideThis.registerEntityModifier(mHider);
+	}
+
+	public boolean isShown() {
+		return mShown;
 	}
 }
