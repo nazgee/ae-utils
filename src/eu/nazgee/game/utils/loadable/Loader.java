@@ -25,12 +25,23 @@ public class Loader implements ILoadable {
 	// ===========================================================
 	// Getter & Setter
 	// ===========================================================
-	public boolean uninstall(ILoadableResource pRes) {
-		return mResources.remove(pRes);
+	public boolean uninstall(ILoadable pRes) {
+		synchronized (mResources) {
+			return mResources.remove(pRes);
+		}
 	}
 
-	public void install(ILoadableResource pRes) {
-		mResources.add(pRes);
+	public void install(ILoadable pRes) {
+		synchronized (mResources) {
+			mResources.add(pRes);
+		}
+	}
+
+	public void installForced(ILoadable pRes, Engine e, Context c) {
+		synchronized (mResources) {
+			mResources.add(pRes);
+		}
+		pRes.load(e, c);
 	}
 
 	public ILoadingHandlerResource getLoadingHandler() {
@@ -47,9 +58,11 @@ public class Loader implements ILoadable {
 	public void load(Engine e, Context c) {
 		synchronized (mLoaded) {
 			assertLoaded(false);
-			for (ILoadable res : mResources) {
-				Log.d(getClass().getSimpleName(), "About to load() " + res.toString());
-				res.load(e, c);
+			synchronized (mResources) {
+				for (ILoadable res : mResources) {
+					Log.d(getClass().getSimpleName(), "About to load() " + res.toString());
+					res.load(e, c);
+				}
 			}
 			if (getLoadingHandler() != null) {
 				Log.d(getClass().getSimpleName(), "About to onLoad() " + getLoadingHandler().toString());
@@ -62,16 +75,16 @@ public class Loader implements ILoadable {
 	public void unload() {
 		synchronized (mLoaded) {
 			assertLoaded(true);
-
 			if (getLoadingHandler() != null) {
 				Log.d(getClass().getSimpleName(), "About to onUnload() " + getLoadingHandler().toString());
 				getLoadingHandler().onUnload();
 			}
-
-			Reversed<ILoadable> rev = new Reversed<ILoadable>(mResources);
-			for (ILoadable res : rev) {
-				Log.d(getClass().getSimpleName(), "About to unload()" + res.toString());
-				res.unload();
+			synchronized (mResources) {
+				Reversed<ILoadable> rev = new Reversed<ILoadable>(mResources);
+				for (ILoadable res : rev) {
+					Log.d(getClass().getSimpleName(), "About to unload()" + res.toString());
+					res.unload();
+				}
 			}
 			setLoaded(false);
 		}

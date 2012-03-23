@@ -21,14 +21,17 @@ public class LoaderResource extends Loader implements ILoadableResource {
 	// ===========================================================
 	// Getter & Setter
 	// ===========================================================
-	@Override
 	public boolean uninstall(ILoadableResource pRes) {
 		return super.uninstall(pRes);
 	}
 
-	@Override
 	public void install(ILoadableResource pRes) {
 		super.install(pRes);
+	}
+
+	public void installForced(ILoadableResource pRes, Engine e, Context c) {
+		pRes.loadResources(e, c);
+		super.installForced(pRes, e, c);
 	}
 
 	public ILoadingHandlerResource getLoadingHandler() {
@@ -44,9 +47,11 @@ public class LoaderResource extends Loader implements ILoadableResource {
 	@Override
 	public void loadResources(Engine e, Context c) {
 		if (!isResourceLoaded()) {
-			for (ILoadable res : mResources) {
-				Log.d(getClass().getSimpleName(), "About to loadResources()" + res.toString());
-				((ILoadableResource)res).loadResources(e, c);
+			synchronized (mResources) {
+				for (ILoadable res : mResources) {
+					Log.d(getClass().getSimpleName(), "About to loadResources()" + res.toString());
+					((ILoadableResource)res).loadResources(e, c);
+				}
 			}
 			if (getLoadingHandler() != null) {
 				Log.d(getClass().getSimpleName(), "About to onLoadResources()" + getLoadingHandler().toString());
