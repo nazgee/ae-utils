@@ -7,7 +7,6 @@ import java.util.LinkedList;
 import java.util.Queue;
 
 import org.andengine.entity.Entity;
-import org.andengine.entity.primitive.Ellipse;
 import org.andengine.entity.shape.Shape;
 import org.andengine.extension.physics.box2d.PhysicsConnector;
 import org.andengine.extension.physics.box2d.PhysicsWorld;
@@ -192,7 +191,7 @@ public class Box2dDebugRenderer extends Entity {
 			yPoints[i]=(vertex.y
 					* PhysicsConnector.PIXEL_TO_METER_RATIO_DEFAULT);
 		}
-		Shape poly = new org.andengine.entity.primitive.Polygon(0,0, xPoints, yPoints, mVertexBufferObjectManager);;
+		Shape poly = new Polygon(0,0, xPoints, yPoints, mVertexBufferObjectManager);;
 		return poly;
 	}
 
