@@ -2,15 +2,12 @@ package eu.nazgee.game.utils.engine.camera;
 
 import org.andengine.engine.camera.SmoothCamera;
 import org.andengine.entity.IEntity;
-import org.andengine.extension.physics.box2d.PhysicsConnector;
 import org.andengine.extension.physics.box2d.util.Vector2Pool;
-
-import android.util.Log;
 
 import com.badlogic.gdx.math.Vector2;
 
 import eu.nazgee.game.utils.misc.UtilsMath;
-import eu.nazgee.game.utils.physics.ITrack;
+import eu.nazgee.game.utils.track.ITrack;
 
 public class SmoothTrackingCamera extends SmoothCamera {
 	private IEntity mChaseBody;

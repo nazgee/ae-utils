@@ -1,6 +1,5 @@
 package eu.nazgee.game.utils.physics;
 
-import org.andengine.entity.primitive.Line;
 import org.andengine.extension.physics.box2d.PhysicsFactory;
 import org.andengine.extension.physics.box2d.PhysicsWorld;
 

@@ -1,6 +1,7 @@
-package eu.nazgee.game.utils.physics;
+package eu.nazgee.game.utils.track;
 
 import com.badlogic.gdx.math.Vector2;
+
 
 public class TrackVector extends Track {
 	private Vector2 mVector2follow; 

@@ -1,8 +1,6 @@
-package eu.nazgee.game.utils.physics;
+package eu.nazgee.game.utils.track;
 
 import com.badlogic.gdx.math.Vector2;
-
-import eu.nazgee.game.utils.misc.UtilsMath;
 
 
 public class Track implements ITrack {

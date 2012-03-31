@@ -5,6 +5,7 @@ import org.andengine.entity.IEntity;
 import org.andengine.util.math.MathUtils;
 
 import eu.nazgee.game.utils.misc.UtilsMath;
+import eu.nazgee.game.utils.track.Track;
 
 public class BoundedPhysicsHandler extends BaseEntityUpdateHandler{
 

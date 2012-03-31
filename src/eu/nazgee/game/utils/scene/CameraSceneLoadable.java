@@ -8,9 +8,8 @@ import org.andengine.opengl.vbo.VertexBufferObjectManager;
 
 import android.content.Context;
 import eu.nazgee.game.utils.loadable.ILoadableResourceScene;
-import eu.nazgee.game.utils.loadable.LoaderResource;
-import eu.nazgee.game.utils.loadable.LoaderResourceScene;
 import eu.nazgee.game.utils.loadable.ILoadingHandlerResourceScene;
+import eu.nazgee.game.utils.loadable.LoaderResourceScene;
 
 abstract public class CameraSceneLoadable extends CameraScene implements ILoadableResourceScene, ILoadingHandlerResourceScene {
 	private float mW, mH;

@@ -4,8 +4,6 @@ import org.andengine.entity.primitive.Line;
 import org.andengine.extension.physics.box2d.util.Vector2Pool;
 import org.andengine.opengl.vbo.VertexBufferObjectManager;
 
-import android.util.FloatMath;
-
 import com.badlogic.gdx.math.Vector2;
 
 import eu.nazgee.game.utils.misc.UtilsMath;

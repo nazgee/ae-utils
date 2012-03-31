@@ -1,59 +1,12 @@
 package eu.nazgee.game.utils.misc;
 
-import org.andengine.extension.physics.box2d.util.Vector2Pool;
-
 import android.util.FloatMath;
-import android.util.Log;
 
 import com.badlogic.gdx.math.Vector2;
 
 public class UtilsMath {
-	
 	static public final float TWO_PI = (float) (2 * Math.PI);
-	static private String LOGTAG = "MathUtils"; 
-	/**
-	 * Tests math utils
-	 * @return true if utilities are ok;
-	 */
-	static public boolean test() {
-		Vector2 vecA = Vector2Pool.obtain(0, 0);
-		
 
-		boolean ret;
-		
-		vecA.set(0, 1);
-		ret = testRotateAndCheck("rotate and check", 15, vecA);
-		
-		Vector2Pool.recycle(vecA);
-		return ret;
-	}
-	
-	static public boolean testRotateAndCheck(String testTag, float step, Vector2 vecInitial) {
-	
-		Vector2 vecA = Vector2Pool.obtain(0, 0);
-		Vector2 vecB = Vector2Pool.obtain(0, 0);
-		
-		vecA.set(vecInitial);
-		vecB.set(vecInitial);
-		boolean retval = true;
-		for (float a = step; a < 720; a += step) {
-			vectorRotateDeg(vecA, step);
-			float angle = normalizeAngleDeg(getAngleDeg(vecA, vecB));
-			
-			Log.d(LOGTAG, testTag + "; vecB=" + vecA + "; vecA=" + vecB + "; wanted_a=" + a + "; a=" + angle);
-			if (Math.abs(normalizeAngleDeg(a) - angle) > 0.01f) {
-				Log.d(LOGTAG, testTag + "; ERROR! vecB=" + vecA + "; vecA=" + vecB + "; wanted_a=" + a + "; a=" + angle);
-				retval = false;
-				break;
-			}
-		}
-		
-		Vector2Pool.recycle(vecA);
-		Vector2Pool.recycle(vecB);
-		
-		return retval;
-	}
-	
 	/**
 	 * Returns number of geometric quadrant to which given vector belongs
 	 * @param vec
@@ -61,7 +14,7 @@ public class UtilsMath {
 	 */
 	static public int getQuadrant(Vector2 vec) {
 		int q;
-		
+
 		if (vec.x > 0) {
 			if (vec.y > 0) {
 				q = 0;
@@ -75,10 +28,10 @@ public class UtilsMath {
 				q = 2;
 			}
 		}
-		
+
 		return q;
 	}
-	
+
 	/**
 	 * Returns the angle in degrees between two given vectors
 	 * @param vecA
@@ -88,7 +41,7 @@ public class UtilsMath {
 	static public float getAngleDeg(Vector2 vecA, Vector2 vecB) {
 		return org.andengine.util.math.MathUtils.radToDeg(getAngleRad(vecA, vecB));
 	}
-	
+
 	/**
 	 * Returns the angle in radians between two given vectors
 	 * @param vecA
@@ -98,10 +51,10 @@ public class UtilsMath {
 	static public float getAngleRad(Vector2 vecA, Vector2 vecB) {
 		float angA = getAngleRad(vecA);
 		float angB = getAngleRad(vecB);
-		
+
 		return angA - angB;
 	}
-	
+
 	/**
 	 * Retrunts angle of vector in degrees within the range [-180..180]
 	 * @param vec
@@ -110,7 +63,7 @@ public class UtilsMath {
 	static public float getAngleDeg(Vector2 vec) {
 		return org.andengine.util.math.MathUtils.radToDeg(getAngleRad(vec));
 	}
-	
+
 	/**
 	 * Retrunts angle of vector in radians within the range [-pi..pi]
 	 * @param vec
@@ -118,10 +71,9 @@ public class UtilsMath {
 	 */
 	static public float getAngleRad(Vector2 vec) {
 		float ret = (float) Math.atan2(vec.y, vec.x);
-		
 		return ret;
 	}
-	
+
 	/**
 	 * Normalize an angle in a 2&pi wide interval around a center value. This
 	 * method has three main uses:
@@ -151,7 +103,7 @@ public class UtilsMath {
 	public static float normalizeAngleDeg(float a, float center) {
 		return (float) (a - 360 * Math.floor((a + 180 - center) / 360));
 	}
-	
+
 	/**
 	 * Normalizes given angle to [-180..180) range
 	 * @param angleDeg
@@ -168,7 +120,7 @@ public class UtilsMath {
 			return angleDeg;
 		}
 	}
-	
+
 	/**
 	 * Normalizes given angle to [0..2PI) range
 	 * @param angleRad
@@ -194,7 +146,7 @@ public class UtilsMath {
 	static public void vectorRotateDeg(Vector2 vec, float angleDeg) {
 		vectorRotateRad(vec, org.andengine.util.math.MathUtils.degToRad(angleDeg));
 	}
-	
+
 	/**
 	 * Rotates given vector by a given number of radians
 	 * @param vec vector to rotate
@@ -206,7 +158,7 @@ public class UtilsMath {
 
 		final float x = vec.x * cos - vec.y * sin;
 		final float y = vec.x * sin + vec.y * cos;
-		
+
 		vec.set(x, y);
 	}
 }

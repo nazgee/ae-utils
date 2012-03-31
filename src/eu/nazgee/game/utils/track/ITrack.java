@@ -1,4 +1,4 @@
-package eu.nazgee.game.utils.physics;
+package eu.nazgee.game.utils.track;
 
 import com.badlogic.gdx.math.Vector2;
 

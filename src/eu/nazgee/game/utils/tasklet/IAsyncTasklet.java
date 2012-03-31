@@ -1,4 +1,4 @@
-package eu.nazgee.game.utils.activity;
+package eu.nazgee.game.utils.tasklet;
 
 /**
  * Represents task that should be done in the background

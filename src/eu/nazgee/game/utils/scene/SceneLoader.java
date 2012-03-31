@@ -9,9 +9,9 @@ import org.andengine.entity.scene.Scene;
 import android.app.Activity;
 import android.content.Context;
 import android.util.Log;
-import eu.nazgee.game.utils.activity.IAsyncTasklet;
-import eu.nazgee.game.utils.activity.TaskletsRunner;
 import eu.nazgee.game.utils.loadable.ILoadableResourceScene;
+import eu.nazgee.game.utils.tasklet.IAsyncTasklet;
+import eu.nazgee.game.utils.tasklet.TaskletsRunner;
 
 public class SceneLoader {
 	private SceneLoadable mLoadingScene;

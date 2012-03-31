@@ -1,13 +1,13 @@
 package eu.nazgee.game.utils.primitives;
 
-import org.andengine.engine.handler.IUpdateHandler;
 import org.andengine.opengl.vbo.VertexBufferObjectManager;
+
+import android.util.Log;
 
 import com.badlogic.gdx.math.Vector2;
 
-import android.util.Log;
 import eu.nazgee.game.utils.misc.UtilsMath;
-import eu.nazgee.game.utils.physics.ITrack;
+import eu.nazgee.game.utils.track.ITrack;
 
 public class TrackingArrow extends Arrow {
 

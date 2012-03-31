@@ -1,4 +1,4 @@
-package eu.nazgee.game.utils.activity;
+package eu.nazgee.game.utils.tasklet;
 
 import android.os.AsyncTask;
 import android.util.Log;

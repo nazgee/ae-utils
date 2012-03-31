@@ -1,10 +1,11 @@
-package eu.nazgee.game.utils.physics;
+package eu.nazgee.game.utils.track.physics;
 
 import org.andengine.extension.physics.box2d.PhysicsConnector;
 
 import com.badlogic.gdx.math.Vector2;
 
 import eu.nazgee.game.utils.misc.UtilsMath;
+import eu.nazgee.game.utils.track.Track;
 
 public class TrackAngle extends Track {
 
