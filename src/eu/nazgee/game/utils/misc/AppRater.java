@@ -42,17 +42,14 @@ public class AppRater {
 
 	public static void showRateDialog(final Context ctx,
 			final SharedPreferences.Editor editor,
-			final String pAppName, final String pPckgName, final Drawable pIcon) {
+			final String pPleaseRateText, final String pPckgName, final Drawable pIcon) {
 		AlertDialog.Builder builder = new AlertDialog.Builder(ctx);
 
-		builder.setTitle("Can you rate this app, please?")
-				.setMessage(
-						"Could you give "
-								+ pAppName
-								+ " some stars? I'd love to hear how you like it!")
+		builder.setTitle("Can you rate it, please?")
+				.setMessage(pPleaseRateText)
 				.setCancelable(false)
 				.setIcon(pIcon)
-				.setPositiveButton("Rate " + pAppName,
+				.setPositiveButton("Rate it now!",
 						new DialogInterface.OnClickListener() {
 							public void onClick(DialogInterface dialog, int id) {
 								ctx.startActivity(new Intent(
