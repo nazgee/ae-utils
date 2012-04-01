@@ -135,7 +135,7 @@ public class SceneSplash extends SceneLoadable implements IOnSceneTouchListener,
 		this.mComplete = pComplete;
 	}
 
-	protected void addSplashScreen(Sprite pSprite) {
+	public void addSplashScreen(Sprite pSprite) {
 		mSprites.add(pSprite);
 	}
 	// ===========================================================

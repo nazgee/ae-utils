@@ -14,17 +14,100 @@ import eu.nazgee.game.utils.tasklet.IAsyncTasklet;
 import eu.nazgee.game.utils.tasklet.TaskletsRunner;
 
 public class SceneLoader {
-	private SceneLoadable mLoadingScene;
-	
-	public SceneLoader(SceneLoadable pLoadingLoader, final Engine e, final Activity c) {
+	private ILoadableResourceScene mLoadingScene;
+	private boolean mShowLoadingScene = true;
+	private boolean mUnloadLoadingScene = true;
+
+	/**
+	 *
+	 * @param pLoadingLoader "Loading..." scene to be used with this SceneLoader
+	 * @param e
+	 * @param c
+	 */
+	public SceneLoader(ILoadableResourceScene pLoadingLoader, final Engine e, final Activity c) {
 		super();
 		mLoadingScene = pLoadingLoader;
-		mLoadingScene.loadResources(e, c);
-		mLoadingScene.load(e, c);
 	}
 
+	/**
+	 * Modifies the behavior of {@link SceneLoader#loadScene(ILoadableResourceScene, Engine, Activity, ISceneLoaderListener)}
+	 *
+	 * @param pShow if true, loadScene will cause showing of "Loading..." scene;
+	 * if false, loadScene will not show "Loading..." scene
+	 * @return instance of self for calls chaining
+	 */
+	public SceneLoader setLoadingSceneShow(boolean pShow) {
+		mShowLoadingScene = pShow;
+		return this;
+	}
+
+	/**
+	 * Modifies the behavior of {@link SceneLoader#loadScene(ILoadableResourceScene, Engine, Activity, ISceneLoaderListener)}
+	 *
+	 * @param pUnload if true, loadScene will cause unloading of "Loading..." scene after requested scene is loaded;
+	 * if false, loadScene will unload "Loading..." scene after requested scene is loaded
+	 * @return instance of self for calls chaining
+	 */
+	public SceneLoader setLoadingSceneUnload(boolean pUnload) {
+		mUnloadLoadingScene = pUnload;
+		return this;
+	}
+
+	/**
+	 * Starts the process of loading pScene in the background. Before loading
+	 * process begins, current scene will be unloaded
+	 * pListener will be called when pScene gets loaded and is about to show.
+	 *
+	 * @param pScene Scene to be loaded in background
+	 * @param e
+	 * @param c
+	 * @param pListener will be called when loading is finished
+	 */
 	public void loadScene(final ILoadableResourceScene pScene, final Engine e, final Activity c, ISceneLoaderListener pListener) {
-		final SceneLoaderTasklet loader = new SceneLoaderTasklet(e, c, mLoadingScene, pScene, pListener);
+		this.loadScene(pScene, e, c, pListener, mShowLoadingScene, mUnloadLoadingScene);
+	}
+
+	/**
+	 * Starts the process of loading pScene in the background. Before loading 
+	 * process begins, current scene will be unloaded. "Loading..." scene will be shown if
+	 * pShowLoadingScene is set to true.
+	 * pListener will be called when pScene will be loaded and about to show.
+	 * If pUnloadLoadingScene is set to true, "Loading..." scene will get unloaded after loading process is finished.
+	 *
+	 * @param pScene Scene to be loaded in backround
+	 * @param e
+	 * @param c
+	 * @param pListener will be called when loading is finished
+	 * @param pShowLoadingScene if true, "Loading..." scene will be shown before loading process begins
+	 * @param pUnloadLoadingScene if true, "Loading..." scene will be unloaded
+	 * after loading process is finished. Setting it to false might be useful
+	 * when the same "Loading..." scene is small (resource-wise), but used many
+	 * times- in this case loading/unloading might be considered as a waste of time
+	 */
+	private void loadScene(final ILoadableResourceScene pScene, final Engine e, final Activity c, ISceneLoaderListener pListener, boolean pShowLoadingScene, boolean pUnloadLoadingScene) {
+		// Make sure that current scene is unloaded, so we do not leak resources
+		Scene current = e.getScene();
+		if (current != mLoadingScene && current instanceof ILoadableResourceScene) {
+			ILoadableResourceScene loaded = (ILoadableResourceScene) current;
+			if (loaded.isLoaded()) {
+				loaded.unload();
+			}
+		}
+
+		// Make sure "Loading..." scene is ready to be used
+		if (!mLoadingScene.isLoaded()) {
+			mLoadingScene.loadResources(e, c);
+			mLoadingScene.load(e, c);
+		}
+
+		// Set "Loading..." scene as current if requested by user and
+		// not being currently shown
+		if (current != mLoadingScene && pShowLoadingScene) {
+			e.setScene(mLoadingScene.getScene());
+		}
+
+		// Start loading process in the background
+		final SceneLoaderTasklet loader = new SceneLoaderTasklet(e, c, (SceneLoadable) mLoadingScene.getScene(), pScene, pListener, pUnloadLoadingScene);
 		c.runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
@@ -34,7 +117,7 @@ public class SceneLoader {
 	}
 
 	public SceneLoadable getLoadingScene() {
-		return mLoadingScene;
+		return (SceneLoadable) mLoadingScene.getScene();
 	}
 
 	public void setLoadingScene(final SceneLoadable pLoadingScene) {
@@ -59,6 +142,7 @@ public class SceneLoader {
 		private final SceneLoadable mPleaseWaitScene;
 		private final ILoadableResourceScene mLoaderToBeLoaded;
 		private volatile Scene mLoadedScene;
+		private final boolean mUnloadPleaseWaitScene;
 
 		/**
 		 * Used to load a scene in the background, showing loading scene in the meanwhile
@@ -66,19 +150,21 @@ public class SceneLoader {
 		 * @param c
 		 * @param pPleaseWaitScene will be unloaded, after pToBeLoaded will be loaded
 		 * @param pToBeLoaded scene that should be loaded
+		 * @param pUnloadPleaseWaitScene if true, pPleaseWaitScene will be unloaded after pToBeLoaded is loaded
 		 */
-		public SceneLoaderTasklet(final Engine e, final Context c, SceneLoadable pPleaseWaitScene, ILoadableResourceScene pToBeLoaded, ISceneLoaderListener pListener) {
+		public SceneLoaderTasklet(final Engine e, final Context c, SceneLoadable pPleaseWaitScene, ILoadableResourceScene pToBeLoaded, ISceneLoaderListener pListener, boolean pUnloadPleaseWaitScene) {
 			mEngine = new WeakReference<Engine>(e);
 			mContext = new WeakReference<Context>(c);
 
 			mListener = pListener;
 			mPleaseWaitScene = pPleaseWaitScene;
 			mLoaderToBeLoaded = pToBeLoaded;
+			mUnloadPleaseWaitScene = pUnloadPleaseWaitScene;
 		}
 
 		@Override
 		public void onAboutToStart() {
-			mEngine.get().setScene(mPleaseWaitScene);
+			// mEngine.get().setScene(mPleaseWaitScene);
 		}
 
 		@Override
@@ -114,6 +200,9 @@ public class SceneLoader {
 				if (mListener != null) {
 					Log.d(getClass().getSimpleName(), "Calling listener");
 					mListener.onSceneLoaded(mLoadedScene);
+				}
+				if (mUnloadPleaseWaitScene) {
+					mPleaseWaitScene.unload();
 				}
 				Log.d(getClass().getSimpleName(), "Setting loaded scene as active");
 				mEngine.get().setScene(mLoadedScene);
