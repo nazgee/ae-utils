@@ -1,7 +1,8 @@
-package eu.nazgee.game.utils.scene;
+package eu.nazgee.game.utils.scene.menu;
 
 import javax.microedition.khronos.opengles.GL10;
 
+import org.andengine.engine.Engine;
 import org.andengine.engine.camera.Camera;
 import org.andengine.entity.scene.menu.item.IMenuItem;
 import org.andengine.entity.scene.menu.item.TextMenuItem;
@@ -10,11 +11,13 @@ import org.andengine.opengl.font.Font;
 import org.andengine.opengl.vbo.VertexBufferObjectManager;
 import org.andengine.util.color.Color;
 
-abstract public class SceneTextmenu extends MenuLoadable {
+import android.content.Context;
+
+abstract public class SceneMenu extends MenuLoadable {
 
 	private Font mFont;
 
-	public SceneTextmenu(float W, float H, Camera pCamera, Font pFont, final VertexBufferObjectManager pVertexBufferObjectManager) {
+	public SceneMenu(float W, float H, Camera pCamera, Font pFont, final VertexBufferObjectManager pVertexBufferObjectManager) {
 		super(W, H, pCamera, pVertexBufferObjectManager);
 		mFont = pFont;
 	}
@@ -32,5 +35,10 @@ abstract public class SceneTextmenu extends MenuLoadable {
 		menuItem.setBlendFunction(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA);
 		addMenuItem(menuItem);
 		return menuItem;
+	}
+
+	@Override
+	public void onLoad(Engine e, Context c) {
+		buildAnimations();
 	}
 }

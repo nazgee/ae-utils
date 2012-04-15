@@ -15,10 +15,11 @@ import android.content.Context;
 public class SceneLoading extends SceneLoadable {
 	private Text mTextLoading;
 	private final Font mFont;
-	private IEntityModifier mMod;
-	public SceneLoading(float W, float H, final Font pFont, final VertexBufferObjectManager pVertexBufferObjectManager) {
+	private final String mLoading;
+	public SceneLoading(float W, float H, final Font pFont, String pLoading, final VertexBufferObjectManager pVertexBufferObjectManager) {
 		super(W, H, pVertexBufferObjectManager);
 		mFont = pFont;
+		mLoading = pLoading;
 		setBackground(new Background(0, 0, 0));
 	}
 	/*=========================================================================
@@ -27,23 +28,44 @@ public class SceneLoading extends SceneLoadable {
 	@Override
 	public void onLoadResources(Engine e, Context c) {
 		mTextLoading = new Text(getW(), getH() / 2, mFont,
-				"Loading...", getVertexBufferObjectManager());
+				mLoading, getVertexBufferObjectManager());
 		this.attachChild(mTextLoading);
 
-		final float loadingHalfW = mTextLoading.getWidth() / 2;
-		mMod = new SequenceEntityModifier(
-				new MoveXModifier(0.5f, getW(), getW() / 2 - loadingHalfW, EaseExponentialOut.getInstance()));
-		mTextLoading.registerEntityModifier(mMod);
 	}
 
 	@Override
 	public void onLoad(Engine e, Context c) {
-		mTextLoading.reset();
-		mTextLoading.setPosition(getW(), getH() / 2);
-		mMod.reset();
+		prepareText();
+		prepareAnimation(mTextLoading);
 	}
+	
 
 	@Override
 	public void onUnload() {
+	}
+
+	private void prepareText() {
+		mTextLoading.reset();
+		mTextLoading.clearEntityModifiers();
+		mTextLoading.clearUpdateHandlers();
+	}
+
+	@Override
+	protected void prepareAnimation(Text pTextLoading) {
+		pTextLoading.setPosition(getW(), getH() / 2);
+
+		final float loadingHalfW = pTextLoading.getWidth() / 2;
+		IEntityModifier mod = new SequenceEntityModifier(
+				new MoveXModifier(0.5f, getW(), getW() / 2 - loadingHalfW, EaseExponentialOut.getInstance()));
+		pTextLoading.registerEntityModifier(mod);
+	}
+
+	@Override
+	public void reset() {
+		if (isLoaded()) {
+			prepareText();
+			prepareAnimation(mTextLoading);
+		}
+		super.reset();
 	}
 }

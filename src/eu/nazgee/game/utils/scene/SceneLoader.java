@@ -1,6 +1,8 @@
 package eu.nazgee.game.utils.scene;
 
 import java.lang.ref.WeakReference;
+import java.util.Iterator;
+import java.util.LinkedList;
 
 import org.andengine.engine.Engine;
 import org.andengine.engine.handler.IUpdateHandler;
@@ -8,15 +10,42 @@ import org.andengine.entity.scene.Scene;
 
 import android.app.Activity;
 import android.content.Context;
+import android.text.GetChars;
 import android.util.Log;
 import eu.nazgee.game.utils.loadable.ILoadableResourceScene;
+import eu.nazgee.game.utils.misc.Reversed;
 import eu.nazgee.game.utils.tasklet.IAsyncTasklet;
 import eu.nazgee.game.utils.tasklet.TaskletsRunner;
 
 public class SceneLoader {
+	public enum eLoadingSceneHandling {
+		SCENE_SET_CHILD,
+		SCENE_SET_ACTIVE,
+		SCENE_DONT_TOUCH
+	}
+
+	public enum eNewSceneHandling {
+		SCENE_SET_CHILD,
+		SCENE_SET_CHILD_NESTED,
+		SCENE_SET_ACTIVE,
+	}
+
+	public enum eOldSceneHandling {
+		UNLOAD_OLD_AFTER_LOADING_NEW,
+		UNLOAD_OLD_BEFORE_LOADING_NEW
+	}
+
 	private ILoadableResourceScene mLoadingScene;
-	private boolean mShowLoadingScene = true;
+
+	private eLoadingSceneHandling mLoadingSceneHandling = eLoadingSceneHandling.SCENE_SET_ACTIVE;
+	private eOldSceneHandling mOldSceneHandling = eOldSceneHandling.UNLOAD_OLD_BEFORE_LOADING_NEW;
+
 	private boolean mUnloadLoadingScene = true;
+
+	private boolean mChildSceneModalUpdate = true;
+	private boolean mChildSceneModalDraw = true;
+	private boolean mChildSceneModalTouch = true;
+
 
 	/**
 	 *
@@ -29,15 +58,78 @@ public class SceneLoader {
 		mLoadingScene = pLoadingLoader;
 	}
 
+	public boolean isChildSceneModalUpdate() {
+		return mChildSceneModalUpdate;
+	}
+	public boolean isChildSceneModalTouch() {
+		return mChildSceneModalTouch;
+	}
+	public boolean isChildSceneModalDraw() {
+		return mChildSceneModalDraw;
+	}
+	public eLoadingSceneHandling getShowLoadingScene() {
+		return mLoadingSceneHandling;
+	}
+	public boolean isUnloadLoadingScene() {
+		return mUnloadLoadingScene;
+	}
+	public eOldSceneHandling getOldSceneHandling() {
+		return mOldSceneHandling;
+	}
+
+	/**
+	 * Modifies the behavior of {@link SceneLoader#loadChildScene(ILoadableResourceScene, Engine, Activity, ISceneLoaderListener)} and {@link SceneLoader#loadScene(ILoadableResourceScene, Engine, Activity, ISceneLoaderListener)}
+	 *
+	 * @param mOldSceneHandling
+	 * @return instance of self for calls chaining
+	 */
+	public SceneLoader setOldSceneHandling(eOldSceneHandling mOldSceneHandling) {
+		this.mOldSceneHandling = mOldSceneHandling;
+		return this;
+	}
+
+	/**
+	 * Modifies the behavior of {@link SceneLoader#loadChildScene(ILoadableResourceScene, Engine, Activity, ISceneLoaderListener)}
+	 *
+	 * @param pModalDraw will be passed as a first argument to {@link Scene#setChildScene(Scene, boolean, boolean, boolean)}
+	 * when {@link SceneLoader#loadChildScene(ILoadableResourceScene, Engine, Activity, ISceneLoaderListener)} will be called
+	 * @return instance of self for calls chaining
+	 */
+	public SceneLoader setChildSceneModalDraw(boolean pModalDraw) {
+		this.mChildSceneModalDraw = pModalDraw;
+		return this;
+	}
+	/**
+	 * Modifies the behavior of {@link SceneLoader#loadChildScene(ILoadableResourceScene, Engine, Activity, ISceneLoaderListener)}
+	 *
+	 * @param pModalTouch will be passed as a second argument to {@link Scene#setChildScene(Scene, boolean, boolean, boolean)}
+	 * when {@link SceneLoader#loadChildScene(ILoadableResourceScene, Engine, Activity, ISceneLoaderListener)} will be called
+	 * @return instance of self for calls chaining
+	 */
+	public SceneLoader setChildSceneModalUpdate(boolean pModalTouch) {
+		this.mChildSceneModalUpdate = pModalTouch;
+		return this;
+	}
+	/**
+	 * Modifies the behavior of {@link SceneLoader#loadChildScene(ILoadableResourceScene, Engine, Activity, ISceneLoaderListener)}
+	 *
+	 * @param pModalTouch will be passed as a third argument to {@link Scene#setChildScene(Scene, boolean, boolean, boolean)}
+	 * when {@link SceneLoader#loadChildScene(ILoadableResourceScene, Engine, Activity, ISceneLoaderListener)} will be called
+	 * @return instance of self for calls chaining
+	 */
+	public SceneLoader setChildSceneModalTouch(boolean pModalTouch) {
+		this.mChildSceneModalTouch = pModalTouch;
+		return this;
+	}
+
 	/**
 	 * Modifies the behavior of {@link SceneLoader#loadScene(ILoadableResourceScene, Engine, Activity, ISceneLoaderListener)}
 	 *
-	 * @param pShow if true, loadScene will cause showing of "Loading..." scene;
-	 * if false, loadScene will not show "Loading..." scene
+	 * @param pShow
 	 * @return instance of self for calls chaining
 	 */
-	public SceneLoader setLoadingSceneShow(boolean pShow) {
-		mShowLoadingScene = pShow;
+	public SceneLoader setLoadingSceneHandling(eLoadingSceneHandling pShow) {
+		mLoadingSceneHandling = pShow;
 		return this;
 	}
 
@@ -54,8 +146,8 @@ public class SceneLoader {
 	}
 
 	/**
-	 * Starts the process of loading pScene in the background. Before loading
-	 * process begins, current scene will be unloaded
+	 * Starts the background process of loading pScene as a current scene.
+	 * Current scene will be unloaded, depending on settings of {@link SceneLoader#setOldSceneHandling(eOldSceneHandling)}
 	 * pListener will be called when pScene gets loaded and is about to show.
 	 *
 	 * @param pScene Scene to be loaded in background
@@ -64,56 +156,227 @@ public class SceneLoader {
 	 * @param pListener will be called when loading is finished
 	 */
 	public void loadScene(final ILoadableResourceScene pScene, final Engine e, final Activity c, ISceneLoaderListener pListener) {
-		this.loadScene(pScene, e, c, pListener, mShowLoadingScene, mUnloadLoadingScene);
+		this.loadScene(pScene, eNewSceneHandling.SCENE_SET_ACTIVE, e, c, pListener, mLoadingSceneHandling, mUnloadLoadingScene);
+	}
+
+	/**
+	 * Starts the background process of loading pScene as a child scene of current scene.
+	 * Current scene will be unloaded, depending on settings of {@link SceneLoader#setOldSceneHandling(eOldSceneHandling)}
+	 * pListener will be called when pScene gets loaded and is about to show.
+	 *
+	 * @param pScene Scene to be loaded in background
+	 * @param e
+	 * @param c
+	 * @param pListener will be called when loading is finished
+	 */
+	public void loadChildScene(final ILoadableResourceScene pScene, final Engine e, final Activity c, ISceneLoaderListener pListener) {
+		this.loadScene(pScene, eNewSceneHandling.SCENE_SET_CHILD, e, c, pListener, mLoadingSceneHandling, mUnloadLoadingScene);
+	}
+
+	/**
+	 * Starts the background process of loading pScene as a child scene of current scene.
+	 * Current scene nor child scene will NOT be unloaded, regardless of settings of {@link SceneLoader#setOldSceneHandling(eOldSceneHandling)}
+	 * pListener will be called when pScene gets loaded and is about to show.
+	 *
+	 * @param pScene Scene to be loaded in background
+	 * @param e
+	 * @param c
+	 * @param pListener will be called when loading is finished
+	 */
+	public void loadChildSceneNested(final ILoadableResourceScene pScene, final Engine e, final Activity c, ISceneLoaderListener pListener) {
+		this.loadScene(pScene, eNewSceneHandling.SCENE_SET_CHILD_NESTED, e, c, pListener, mLoadingSceneHandling, mUnloadLoadingScene);
+	}
+
+	/**
+	 * Unloads every child scene of the given pScene if it is an instance of ILoadableResourceScene
+	 * @param pScene
+	 * @note pScene.back() will not be called for you- do it yourself!
+	 */
+	public void unloadEveryYoungerScene(final Scene pScene) {
+
+		LinkedList<Scene> children = new LinkedList<Scene>();
+
+		// find the youngest child
+		Scene scene = pScene;
+		while (scene.getChildScene() != null) {
+			scene = scene.getChildScene();
+			children.add(scene);
+		}
+
+		for (Iterator<Scene> iterator = new Reversed<Scene>(children).iterator(); iterator.hasNext();) {
+			Scene child = (Scene) iterator.next();
+
+			ILoadableResourceScene loadableChild = (ILoadableResourceScene) child;
+			if (loadableChild.isLoaded()) {
+				loadableChild.unload();
+			} else {
+				new RuntimeException("Oops! Unloaded scene was set as one of the children!");
+			}
+		}
+	}
+
+	/**
+	 * Unloads only the youngest child scene of the given pScene if it is an instance of ILoadableResourceScene
+	 * @param pScene
+	 * @return parent of the unloaded child scene
+	 * @note pScene.back() will not be called for you- do it yourself!
+	 */
+	public Scene unloadYoungestChildScene(final Scene pScene) {
+
+		SceneFamily family = findYoungestChild(pScene);
+		if (family.child != pScene)
+		{
+			ILoadableResourceScene loadableChild = (ILoadableResourceScene) family.child;
+			if (loadableChild.isLoaded()) {
+				loadableChild.unload();
+			} else {
+				new RuntimeException("Oops! Unloaded scene was set as one of the children!");
+			}
+		}
+		return family.parent;
 	}
 
 	/**
 	 * Starts the process of loading pScene in the background. Before loading 
 	 * process begins, current scene will be unloaded. "Loading..." scene will be shown if
-	 * pShowLoadingScene is set to true.
+	 * pLoadingSceneHandling is set to true.
 	 * pListener will be called when pScene will be loaded and about to show.
 	 * If pUnloadLoadingScene is set to true, "Loading..." scene will get unloaded after loading process is finished.
 	 *
-	 * @param pScene Scene to be loaded in backround
+	 * @param pScene Scene to be loaded in background
 	 * @param e
 	 * @param c
 	 * @param pListener will be called when loading is finished
-	 * @param pShowLoadingScene if true, "Loading..." scene will be shown before loading process begins
+	 * @param pLoadingSceneHandling if true, "Loading..." scene will be shown before loading process begins
 	 * @param pUnloadLoadingScene if true, "Loading..." scene will be unloaded
 	 * after loading process is finished. Setting it to false might be useful
 	 * when the same "Loading..." scene is small (resource-wise), but used many
 	 * times- in this case loading/unloading might be considered as a waste of time
 	 */
-	private void loadScene(final ILoadableResourceScene pScene, final Engine e, final Activity c, ISceneLoaderListener pListener, boolean pShowLoadingScene, boolean pUnloadLoadingScene) {
-		// Make sure that current scene is unloaded, so we do not leak resources
-		Scene current = e.getScene();
-		if (current != mLoadingScene && current instanceof ILoadableResourceScene) {
-			ILoadableResourceScene loaded = (ILoadableResourceScene) current;
-			if (loaded.isLoaded()) {
-				loaded.unload();
+	private void loadScene(final ILoadableResourceScene pScene, final eNewSceneHandling sceneHandling, final Engine e, final Activity c, ISceneLoaderListener pListener, eLoadingSceneHandling pLoadingSceneHandling, boolean pUnloadLoadingScene) {
+		Scene oldScene = e.getScene();
+
+		switch (sceneHandling) {
+		case SCENE_SET_ACTIVE:
+			if (	mOldSceneHandling == eOldSceneHandling.UNLOAD_OLD_BEFORE_LOADING_NEW) {
+				unloadIfNotSplashscreen(oldScene);
 			}
+			break;
+		case SCENE_SET_CHILD:
+			if (mOldSceneHandling == eOldSceneHandling.UNLOAD_OLD_BEFORE_LOADING_NEW) {
+				unloadIfNotSplashscreen(oldScene.getChildScene());
+			}
+			break;
+		case SCENE_SET_CHILD_NESTED:
+			/* we are not unloadint anything in this case */
+			break;
+		default:
+			break;
 		}
 
-		// Make sure "Loading..." scene is ready to be used
-		if (!mLoadingScene.isLoaded()) {
-			mLoadingScene.loadResources(e, c);
-			mLoadingScene.load(e, c);
-		}
-
-		// Set "Loading..." scene as current if requested by user and
-		// not being currently shown
-		if (current != mLoadingScene && pShowLoadingScene) {
-			e.setScene(mLoadingScene.getScene());
-		}
+		prepareForLoading(e, c, pLoadingSceneHandling);
 
 		// Start loading process in the background
-		final SceneLoaderTasklet loader = new SceneLoaderTasklet(e, c, (SceneLoadable) mLoadingScene.getScene(), pScene, pListener, pUnloadLoadingScene);
+		final SceneLoaderTasklet loader = new SceneLoaderTasklet(e, c, 
+				(SceneLoadable) mLoadingScene.getScene(), pScene, pListener, 
+				pUnloadLoadingScene, oldScene, new SetupHandler() {
+			@Override
+			public void setupScene(Engine e, Scene pNewScene, Scene pOldScene) {
+				switch (sceneHandling) {
+				case SCENE_SET_ACTIVE:
+					e.setScene(pNewScene);
+					break;
+				case SCENE_SET_CHILD:
+					e.setScene(pOldScene);
+					pOldScene.setChildScene(pNewScene, mChildSceneModalDraw, mChildSceneModalUpdate, mChildSceneModalTouch);
+					break;
+				case SCENE_SET_CHILD_NESTED:
+					SceneFamily family = findYoungestChild(pOldScene);
+					// set new scene as a child of last child of pOldScene
+					e.setScene(pOldScene);
+					family.child.setChildScene(pNewScene, mChildSceneModalDraw, mChildSceneModalUpdate, mChildSceneModalTouch);
+					break;
+				default:
+					break;
+				}
+			}
+
+			@Override
+			public void unloadOldScene(Scene pOldScene) {
+				switch (sceneHandling) {
+				case SCENE_SET_ACTIVE:
+					if (mOldSceneHandling == eOldSceneHandling.UNLOAD_OLD_AFTER_LOADING_NEW) {
+						tryUnloadSafe(pOldScene);
+					}
+					break;
+				case SCENE_SET_CHILD:
+					if (mOldSceneHandling == eOldSceneHandling.UNLOAD_OLD_AFTER_LOADING_NEW) {
+						tryUnloadSafe(pOldScene.getChildScene());
+					}
+					break;
+				case SCENE_SET_CHILD_NESTED:
+					/* we are not unloadint anything in this case */
+					break;
+				default:
+					break;
+				}
+			}
+		});
+
 		c.runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
 				new TaskletsRunner(loader).execute(loader);
 			}
 		});
+	}
+
+	private void prepareForLoading(final Engine e, final Activity c,
+			eLoadingSceneHandling pLoadingSceneHandling) {
+		Scene current = e.getScene();
+
+
+		// Make sure "Loading..." scene is ready to be used
+		if (!mLoadingScene.isLoaded()) {
+			mLoadingScene.loadResources(e, c);
+			mLoadingScene.load(e, c);
+		}
+		mLoadingScene.getScene().reset();
+
+		// Set "Loading..." scene as current if requested by user and
+		// not being currently shown
+		switch (pLoadingSceneHandling) {
+		case SCENE_SET_ACTIVE:
+			if (current != mLoadingScene) {
+				e.setScene(mLoadingScene.getScene());
+			}
+			break;
+		case SCENE_SET_CHILD:
+				if (e.getScene() != null) {
+					e.getScene().setChildScene(mLoadingScene.getScene(), mChildSceneModalDraw, mChildSceneModalUpdate, mChildSceneModalTouch);
+				}
+			break;
+		default:
+			break;
+		}
+	}
+
+	private boolean unloadIfNotSplashscreen(Scene unloadScene) {
+		if (unloadScene != mLoadingScene) { // splash screen case
+			return tryUnloadSafe(unloadScene);
+		}
+		return false;
+	}
+
+	private boolean tryUnloadSafe(Scene unloadScene) {
+		if (unloadScene instanceof ILoadableResourceScene) {
+		ILoadableResourceScene loaded = (ILoadableResourceScene) unloadScene;
+			if (loaded.isLoaded()) {
+				loaded.unload();
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public SceneLoadable getLoadingScene() {
@@ -143,6 +406,8 @@ public class SceneLoader {
 		private final ILoadableResourceScene mLoaderToBeLoaded;
 		private volatile Scene mLoadedScene;
 		private final boolean mUnloadPleaseWaitScene;
+		private final Scene mOldScene;
+		private final SetupHandler mSetupHandler;
 
 		/**
 		 * Used to load a scene in the background, showing loading scene in the meanwhile
@@ -152,7 +417,12 @@ public class SceneLoader {
 		 * @param pToBeLoaded scene that should be loaded
 		 * @param pUnloadPleaseWaitScene if true, pPleaseWaitScene will be unloaded after pToBeLoaded is loaded
 		 */
-		public SceneLoaderTasklet(final Engine e, final Context c, SceneLoadable pPleaseWaitScene, ILoadableResourceScene pToBeLoaded, ISceneLoaderListener pListener, boolean pUnloadPleaseWaitScene) {
+		public SceneLoaderTasklet(final Engine e, final Context c,
+				SceneLoadable pPleaseWaitScene, ILoadableResourceScene pToBeLoaded,
+				ISceneLoaderListener pListener,
+				boolean pUnloadPleaseWaitScene,
+				final Scene pOldScene,
+				final SetupHandler pSetupHandler) {
 			mEngine = new WeakReference<Engine>(e);
 			mContext = new WeakReference<Context>(c);
 
@@ -160,6 +430,8 @@ public class SceneLoader {
 			mPleaseWaitScene = pPleaseWaitScene;
 			mLoaderToBeLoaded = pToBeLoaded;
 			mUnloadPleaseWaitScene = pUnloadPleaseWaitScene;
+			mOldScene = pOldScene;
+			mSetupHandler = pSetupHandler;
 		}
 
 		@Override
@@ -187,26 +459,61 @@ public class SceneLoader {
 					public void onUpdate(float pSecondsElapsed) {
 						if (splash.isComplete()) {
 							splash.waitForCompleted();
-							if (mListener != null) {
-								mListener.onSceneLoaded(mLoadedScene);
-							}
-							splash.unload();
-							mEngine.get().setScene(mLoadedScene);
+							setupScene();
 						}
 					}
 				});
 			} else {
 				Log.d(getClass().getSimpleName(), "Scene loaded");
-				if (mListener != null) {
-					Log.d(getClass().getSimpleName(), "Calling listener");
-					mListener.onSceneLoaded(mLoadedScene);
-				}
-				if (mUnloadPleaseWaitScene) {
-					mPleaseWaitScene.unload();
-				}
-				Log.d(getClass().getSimpleName(), "Setting loaded scene as active");
-				mEngine.get().setScene(mLoadedScene);
+				setupScene();
 			}
+		}
+
+		private void setupScene() {
+			if (mUnloadPleaseWaitScene) {
+				mPleaseWaitScene.unload();
+			}
+
+			Log.d(getClass().getSimpleName(), "Setting loaded scene as active");
+
+			mSetupHandler.setupScene(mEngine.get(), mLoadedScene, mOldScene);
+			mSetupHandler.unloadOldScene(mOldScene);
+
+			if (mListener != null) {
+				Log.d(getClass().getSimpleName(), "Calling listener");
+				mListener.onSceneLoaded(mLoadedScene);
+			}
+		}
+	}
+
+	private interface SetupHandler {
+		void setupScene(Engine e, Scene pNewScene, Scene pOldScene);
+		void unloadOldScene(Scene pOldScene);
+	}
+
+	/**
+	 * Finds youngest child scene, starting from pBaseScene
+	 * @param pBaseScene
+	 * @return youngest child of given pBaseScene; pBaseScene if no children were found
+	 */
+	protected SceneFamily findYoungestChild(Scene pBaseScene) {
+		// find the youngest child
+		SceneFamily ret = new SceneFamily(pBaseScene, pBaseScene);
+
+		while (ret.child.getChildScene() != null) {
+			ret.parent = ret.child;
+			ret.child = ret.parent.getChildScene();
+		}
+		return ret;
+	}
+
+	final class SceneFamily {
+		public Scene parent;
+		public Scene child;
+		public SceneFamily(Scene parent, Scene child) {
+			super();
+			this.parent = parent;
+			this.child = child;
 		}
 	}
 }

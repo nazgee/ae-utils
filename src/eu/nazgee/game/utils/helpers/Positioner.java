@@ -34,6 +34,14 @@ public class Positioner {
 		float[] pos = getCenter(pWhere);
 		setCentered(pShape, pos[0], pos[1]);
 	}
+	synchronized static public void setCenteredBottom(IAreaShape pShape, IAreaShape pWhere) {
+		float[] pos = getCenter(pWhere);
+		setCentered(pShape, pos[0], 2*pos[1] - pShape.getHeight());
+	}
+	synchronized static public void setCenteredTop(IAreaShape pShape, IAreaShape pWhere) {
+		float[] pos = getCenter(pWhere);
+		setCentered(pShape, pos[0], 0);
+	}
 	synchronized static public void setCenteredX(IAreaShape pShape, IAreaShape pWhere) {
 		float[] pos = getCenter(pWhere);
 		setCenteredX(pShape, pos[0]);
