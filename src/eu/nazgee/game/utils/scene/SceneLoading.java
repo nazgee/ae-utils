@@ -50,7 +50,6 @@ public class SceneLoading extends SceneLoadable {
 		mTextLoading.clearUpdateHandlers();
 	}
 
-	@Override
 	protected void prepareAnimation(Text pTextLoading) {
 		pTextLoading.setPosition(getW(), getH() / 2);
 
