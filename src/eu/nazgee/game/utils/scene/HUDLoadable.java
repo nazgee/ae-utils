@@ -25,7 +25,7 @@ abstract public class HUDLoadable extends HUD implements ILoadableResourceScene,
 		mW = W;
 		mH = H;
 	}
-	protected LoaderResourceScene getLoader() {
+	public LoaderResourceScene getLoader() {
 		return mLoader;
 	}
 	/*=========================================================================
