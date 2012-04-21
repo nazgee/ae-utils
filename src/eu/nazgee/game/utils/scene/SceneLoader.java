@@ -480,8 +480,14 @@ public class SceneLoader {
 			mSetupHandler.unloadOldScene(mOldScene);
 
 			if (mListener != null) {
-				Log.d(getClass().getSimpleName(), "Calling listener");
-				mListener.onSceneLoaded(mLoadedScene);
+				Log.d(getClass().getSimpleName(), "Queued listener");
+				mLoadedScene.postRunnable(new Runnable() {
+					@Override
+					public void run() {
+						Log.d(getClass().getSimpleName(), "Calling listener");
+						mListener.onSceneLoaded(mLoadedScene);
+					}
+				});
 			}
 		}
 	}
