@@ -10,7 +10,6 @@ import org.andengine.entity.scene.Scene;
 
 import android.app.Activity;
 import android.content.Context;
-import android.text.GetChars;
 import android.util.Log;
 import eu.nazgee.game.utils.loadable.ILoadableResourceScene;
 import eu.nazgee.game.utils.misc.Reversed;
@@ -78,7 +77,7 @@ public class SceneLoader {
 	}
 
 	/**
-	 * Modifies the behavior of {@link SceneLoader#loadChildScene(ILoadableResourceScene, Engine, Activity, ISceneLoaderListener)} and {@link SceneLoader#loadScene(ILoadableResourceScene, Engine, Activity, ISceneLoaderListener)}
+	 * Modifies the behavior of {@link SceneLoader#loadChildScene(ILoadableResourceScene, Engine, Context, ISceneLoaderListener)} and {@link SceneLoader#loadScene(ILoadableResourceScene, Engine, Context, ISceneLoaderListener)}
 	 *
 	 * @param mOldSceneHandling
 	 * @return instance of self for calls chaining
@@ -89,10 +88,10 @@ public class SceneLoader {
 	}
 
 	/**
-	 * Modifies the behavior of {@link SceneLoader#loadChildScene(ILoadableResourceScene, Engine, Activity, ISceneLoaderListener)}
+	 * Modifies the behavior of {@link SceneLoader#loadChildScene(ILoadableResourceScene, Engine, Context, ISceneLoaderListener)}
 	 *
 	 * @param pModalDraw will be passed as a first argument to {@link Scene#setChildScene(Scene, boolean, boolean, boolean)}
-	 * when {@link SceneLoader#loadChildScene(ILoadableResourceScene, Engine, Activity, ISceneLoaderListener)} will be called
+	 * when {@link SceneLoader#loadChildScene(ILoadableResourceScene, Engine, Context, ISceneLoaderListener)} will be called
 	 * @return instance of self for calls chaining
 	 */
 	public SceneLoader setChildSceneModalDraw(boolean pModalDraw) {
@@ -100,10 +99,10 @@ public class SceneLoader {
 		return this;
 	}
 	/**
-	 * Modifies the behavior of {@link SceneLoader#loadChildScene(ILoadableResourceScene, Engine, Activity, ISceneLoaderListener)}
+	 * Modifies the behavior of {@link SceneLoader#loadChildScene(ILoadableResourceScene, Engine, Context, ISceneLoaderListener)}
 	 *
 	 * @param pModalTouch will be passed as a second argument to {@link Scene#setChildScene(Scene, boolean, boolean, boolean)}
-	 * when {@link SceneLoader#loadChildScene(ILoadableResourceScene, Engine, Activity, ISceneLoaderListener)} will be called
+	 * when {@link SceneLoader#loadChildScene(ILoadableResourceScene, Engine, Context, ISceneLoaderListener)} will be called
 	 * @return instance of self for calls chaining
 	 */
 	public SceneLoader setChildSceneModalUpdate(boolean pModalTouch) {
@@ -111,10 +110,10 @@ public class SceneLoader {
 		return this;
 	}
 	/**
-	 * Modifies the behavior of {@link SceneLoader#loadChildScene(ILoadableResourceScene, Engine, Activity, ISceneLoaderListener)}
+	 * Modifies the behavior of {@link SceneLoader#loadChildScene(ILoadableResourceScene, Engine, Context, ISceneLoaderListener)}
 	 *
 	 * @param pModalTouch will be passed as a third argument to {@link Scene#setChildScene(Scene, boolean, boolean, boolean)}
-	 * when {@link SceneLoader#loadChildScene(ILoadableResourceScene, Engine, Activity, ISceneLoaderListener)} will be called
+	 * when {@link SceneLoader#loadChildScene(ILoadableResourceScene, Engine, Context, ISceneLoaderListener)} will be called
 	 * @return instance of self for calls chaining
 	 */
 	public SceneLoader setChildSceneModalTouch(boolean pModalTouch) {
@@ -123,7 +122,7 @@ public class SceneLoader {
 	}
 
 	/**
-	 * Modifies the behavior of {@link SceneLoader#loadScene(ILoadableResourceScene, Engine, Activity, ISceneLoaderListener)}
+	 * Modifies the behavior of {@link SceneLoader#loadScene(ILoadableResourceScene, Engine, Context, ISceneLoaderListener)}
 	 *
 	 * @param pShow
 	 * @return instance of self for calls chaining
@@ -134,7 +133,7 @@ public class SceneLoader {
 	}
 
 	/**
-	 * Modifies the behavior of {@link SceneLoader#loadScene(ILoadableResourceScene, Engine, Activity, ISceneLoaderListener)}
+	 * Modifies the behavior of {@link SceneLoader#loadScene(ILoadableResourceScene, Engine, Context, ISceneLoaderListener)}
 	 *
 	 * @param pUnload if true, loadScene will cause unloading of "Loading..." scene after requested scene is loaded;
 	 * if false, loadScene will unload "Loading..." scene after requested scene is loaded
@@ -155,7 +154,7 @@ public class SceneLoader {
 	 * @param c
 	 * @param pListener will be called when loading is finished
 	 */
-	public void loadScene(final ILoadableResourceScene pScene, final Engine e, final Activity c, ISceneLoaderListener pListener) {
+	public void loadScene(final ILoadableResourceScene pScene, final Engine e, final Context c, ISceneLoaderListener pListener) {
 		this.loadScene(pScene, eNewSceneHandling.SCENE_SET_ACTIVE, e, c, pListener, mLoadingSceneHandling, mUnloadLoadingScene);
 	}
 
@@ -169,7 +168,7 @@ public class SceneLoader {
 	 * @param c
 	 * @param pListener will be called when loading is finished
 	 */
-	public void loadChildScene(final ILoadableResourceScene pScene, final Engine e, final Activity c, ISceneLoaderListener pListener) {
+	public void loadChildScene(final ILoadableResourceScene pScene, final Engine e, final Context c, ISceneLoaderListener pListener) {
 		this.loadScene(pScene, eNewSceneHandling.SCENE_SET_CHILD, e, c, pListener, mLoadingSceneHandling, mUnloadLoadingScene);
 	}
 
@@ -183,7 +182,7 @@ public class SceneLoader {
 	 * @param c
 	 * @param pListener will be called when loading is finished
 	 */
-	public void loadChildSceneNested(final ILoadableResourceScene pScene, final Engine e, final Activity c, ISceneLoaderListener pListener) {
+	public void loadChildSceneNested(final ILoadableResourceScene pScene, final Engine e, final Context c, ISceneLoaderListener pListener) {
 		this.loadScene(pScene, eNewSceneHandling.SCENE_SET_CHILD_NESTED, e, c, pListener, mLoadingSceneHandling, mUnloadLoadingScene);
 	}
 
@@ -253,7 +252,7 @@ public class SceneLoader {
 	 * when the same "Loading..." scene is small (resource-wise), but used many
 	 * times- in this case loading/unloading might be considered as a waste of time
 	 */
-	private void loadScene(final ILoadableResourceScene pScene, final eNewSceneHandling sceneHandling, final Engine e, final Activity c, ISceneLoaderListener pListener, eLoadingSceneHandling pLoadingSceneHandling, boolean pUnloadLoadingScene) {
+	private void loadScene(final ILoadableResourceScene pScene, final eNewSceneHandling sceneHandling, final Engine e, final Context c, ISceneLoaderListener pListener, eLoadingSceneHandling pLoadingSceneHandling, boolean pUnloadLoadingScene) {
 		Scene oldScene = e.getScene();
 
 		switch (sceneHandling) {
@@ -323,15 +322,21 @@ public class SceneLoader {
 			}
 		});
 
-		c.runOnUiThread(new Runnable() {
-			@Override
-			public void run() {
-				new TaskletsRunner(loader).execute(loader);
-			}
-		});
+		if (c instanceof Activity) {
+			Activity act = (Activity) c;
+			act.runOnUiThread(new Runnable() {
+				@Override
+				public void run() {
+					new TaskletsRunner(loader).execute(loader);
+				}
+			});
+		} else {
+			Log.w(getClass().getSimpleName(), "this might be risky- not calling execute from UI thread!");
+			new TaskletsRunner(loader).execute(loader);
+		}
 	}
 
-	private void prepareForLoading(final Engine e, final Activity c,
+	private void prepareForLoading(final Engine e, final Context c,
 			eLoadingSceneHandling pLoadingSceneHandling) {
 		Scene current = e.getScene();
 
