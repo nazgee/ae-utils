@@ -53,7 +53,7 @@ public class SceneLoader {
 	 * @param e
 	 * @param c
 	 */
-	public SceneLoader(ILoadableResourceScene pLoadingLoader, final Engine e, final Activity c) {
+	public SceneLoader(ILoadableResourceScene pLoadingLoader) {
 		super();
 		mLoadingScene = pLoadingLoader;
 	}
