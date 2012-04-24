@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 import org.andengine.entity.primitive.Line;
 import org.andengine.entity.primitive.Rectangle;
-import org.andengine.entity.primitive.vbo.DrawMode;
 import org.andengine.entity.primitive.vbo.HighPerformanceRectangleVertexBufferObject;
 import org.andengine.opengl.vbo.DrawType;
 import org.andengine.opengl.vbo.VertexBufferObjectManager;
