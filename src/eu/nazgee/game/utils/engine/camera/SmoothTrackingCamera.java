@@ -30,8 +30,12 @@ public class SmoothTrackingCamera extends SmoothCamera {
 
 	public void setTracking(IEntity pChaseBody, ITrack pTracking, float pOffsetDeg) {
 		super.setChaseEntity(pChaseBody);
-		mTrack = pTracking;
 		mChaseBody = pChaseBody;
+		setTracking(pTracking, pOffsetDeg);
+	}
+
+	public void setTracking(ITrack pTracking, float pOffsetDeg) {
+		mTrack = pTracking;
 		mOffsetDeg = pOffsetDeg;
 	}
 
