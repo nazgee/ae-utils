@@ -1,5 +1,6 @@
 package eu.nazgee.game.utils.helpers;
 
+import org.andengine.entity.IEntity;
 import org.andengine.entity.shape.IAreaShape;
 
 public class Positioner {
@@ -14,10 +15,8 @@ public class Positioner {
 		return cnt[0];
 	}
 
-	synchronized static public float[] getCenter(IAreaShape pShape) {
-		float[] ret = new float[2]; 
-		pShape.convertLocalToSceneCoordinates(pShape.getWidth()/2, pShape.getHeight()/2, ret);
-		return ret;
+	synchronized static public float[] getCenter(IEntity pShape) {
+		return pShape.getSceneCenterCoordinates();
 	}
 
 	synchronized static public void setCentered(IAreaShape pShape, float pX, float pY) {
@@ -30,23 +29,23 @@ public class Positioner {
 		pShape.setPosition(pShape.getX(), pY - pShape.getHeight()/2);
 	}
 
-	synchronized static public void setCentered(IAreaShape pShape, IAreaShape pWhere) {
+	synchronized static public void setCentered(IAreaShape pShape, IEntity pWhere) {
 		float[] pos = getCenter(pWhere);
 		setCentered(pShape, pos[0], pos[1]);
 	}
-	synchronized static public void setCenteredBottom(IAreaShape pShape, IAreaShape pWhere) {
+	synchronized static public void setCenteredBottom(IAreaShape pShape, IEntity pWhere) {
 		float[] pos = getCenter(pWhere);
 		setCentered(pShape, pos[0], 2*pos[1] - pShape.getHeight());
 	}
-	synchronized static public void setCenteredTop(IAreaShape pShape, IAreaShape pWhere) {
+	synchronized static public void setCenteredTop(IAreaShape pShape, IEntity pWhere) {
 		float[] pos = getCenter(pWhere);
 		setCentered(pShape, pos[0], 0);
 	}
-	synchronized static public void setCenteredX(IAreaShape pShape, IAreaShape pWhere) {
+	synchronized static public void setCenteredX(IAreaShape pShape, IEntity pWhere) {
 		float[] pos = getCenter(pWhere);
 		setCenteredX(pShape, pos[0]);
 	}
-	synchronized static public void setCenteredY(IAreaShape pShape, IAreaShape pWhere) {
+	synchronized static public void setCenteredY(IAreaShape pShape, IEntity pWhere) {
 		float[] pos = getCenter(pWhere);
 		setCenteredY(pShape, pos[1]);
 	}
