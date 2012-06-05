@@ -40,6 +40,7 @@ public class LoaderResource extends Loader implements ILoadableResource {
 
 	public void setLoadingHandler(ILoadingHandlerResource pHandler) {
 		mLoadingHandler = pHandler;
+		super.setLoadingHandler(pHandler);
 	}
 	// ===========================================================
 	// Methods for/from SuperClass/Interfaces

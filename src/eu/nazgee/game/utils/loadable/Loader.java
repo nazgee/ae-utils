@@ -104,6 +104,6 @@ public class Loader implements ILoadable {
 
 	protected void assertLoaded(boolean pValue) {
 		if (isLoaded() != pValue)
-			throw new RuntimeException(getClass().getSimpleName() + " loaded != " + pValue);
+			throw new RuntimeException(mLoadingHandler.getClass().getSimpleName() + " loaded != " + pValue);
 	}
 }

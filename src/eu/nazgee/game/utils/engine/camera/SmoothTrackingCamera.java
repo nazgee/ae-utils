@@ -52,6 +52,12 @@ public class SmoothTrackingCamera extends SmoothCamera {
 	}
 
 	@Override
+	public void reset() {
+		super.reset();
+		setTracking(null, null, 0);
+	}
+
+	@Override
 	public void onUpdate(final float pSecondsElapsed) {
 		// Adjust maximum X-Y speeds
 		final float dX = Math.abs(this.getCenterX() - this.getTargetCenterX());

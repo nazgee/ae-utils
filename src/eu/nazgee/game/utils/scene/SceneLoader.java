@@ -7,6 +7,7 @@ import java.util.LinkedList;
 import org.andengine.engine.Engine;
 import org.andengine.engine.handler.IUpdateHandler;
 import org.andengine.entity.scene.Scene;
+import org.andengine.entity.scene.menu.MenuScene;
 
 import android.app.Activity;
 import android.content.Context;
@@ -189,9 +190,9 @@ public class SceneLoader {
 	/**
 	 * Unloads every child scene of the given pScene if it is an instance of ILoadableResourceScene
 	 * @param pScene
-	 * @note pScene.back() will not be called for you- do it yourself!
+	 * @note pScene.back() WILL be called for you- do not do it yourself!
 	 */
-	public void unloadEveryYoungerScene(final Scene pScene) {
+	public void unloadEveryYoungerSceneCallBack(final Scene pScene) {
 
 		LinkedList<Scene> children = new LinkedList<Scene>();
 
@@ -204,27 +205,36 @@ public class SceneLoader {
 
 		for (Iterator<Scene> iterator = new Reversed<Scene>(children).iterator(); iterator.hasNext();) {
 			Scene child = (Scene) iterator.next();
-
-			ILoadableResourceScene loadableChild = (ILoadableResourceScene) child;
-			if (loadableChild.isLoaded()) {
-				loadableChild.unload();
-			} else {
-				new RuntimeException("Oops! Unloaded scene was set as one of the children!");
-			}
+			child.back();
+			tryUnloadSafe(child);
 		}
+	}
+
+	/**
+	 * Unloads every child scene of the given pScene if it is an instance of ILoadableResourceScene.
+	 * pScene also gets unloaded.
+	 * @param pScene
+	 * @note pScene.back() WILL be called for you- do not do it yourself!
+	 */
+	public void unloadEveryYoungerSceneWithGivenCallBack(final Scene pScene) {
+		unloadEveryYoungerSceneCallBack(pScene);
+		tryUnloadSafe(pScene);
+		pScene.back();
 	}
 
 	/**
 	 * Unloads only the youngest child scene of the given pScene if it is an instance of ILoadableResourceScene
 	 * @param pScene
 	 * @return parent of the unloaded child scene
-	 * @note pScene.back() will not be called for you- do it yourself!
+	 * @note pScene.back() WILL be called for you- do not do it yourself!
 	 */
-	public Scene unloadYoungestChildScene(final Scene pScene) {
+	public static Scene unloadYoungestChildSceneCallBack(final Scene pScene) {
 
 		SceneFamily family = findYoungestChild(pScene);
 		if (family.child != pScene)
 		{
+			family.child.back();
+
 			ILoadableResourceScene loadableChild = (ILoadableResourceScene) family.child;
 			if (loadableChild.isLoaded()) {
 				loadableChild.unload();
@@ -246,7 +256,7 @@ public class SceneLoader {
 	 * @param e
 	 * @param c
 	 * @param pListener will be called when loading is finished
-	 * @param pLoadingSceneHandling if true, "Loading..." scene will be shown before loading process begins
+	 * @param pLoadingSceneHandling describes how "Loading..." scene will be displayed
 	 * @param pUnloadLoadingScene if true, "Loading..." scene will be unloaded
 	 * after loading process is finished. Setting it to false might be useful
 	 * when the same "Loading..." scene is small (resource-wise), but used many
@@ -290,10 +300,15 @@ public class SceneLoader {
 					pOldScene.setChildScene(pNewScene, mChildSceneModalDraw, mChildSceneModalUpdate, mChildSceneModalTouch);
 					break;
 				case SCENE_SET_CHILD_NESTED:
-					SceneFamily family = findYoungestChild(pOldScene);
 					// set new scene as a child of last child of pOldScene
 					e.setScene(pOldScene);
-					family.child.setChildScene(pNewScene, mChildSceneModalDraw, mChildSceneModalUpdate, mChildSceneModalTouch);
+					SceneFamily family = findYoungestChild(pOldScene);
+					if (family.child == mLoadingScene) {
+						Log.d(getClass().getSimpleName(), "Gently removing Loading... scene of the stack");
+						family.child.back();
+					}
+
+					family.parent.setChildScene(pNewScene, mChildSceneModalDraw, mChildSceneModalUpdate, mChildSceneModalTouch);
 					break;
 				default:
 					break;
@@ -357,8 +372,14 @@ public class SceneLoader {
 			}
 			break;
 		case SCENE_SET_CHILD:
-				if (e.getScene() != null) {
-					e.getScene().setChildScene(mLoadingScene.getScene(), mChildSceneModalDraw, mChildSceneModalUpdate, mChildSceneModalTouch);
+				Scene scene = e.getScene();
+				if (scene != null) {
+					SceneFamily familyMember = findYoungestChild(scene);
+					if (!(familyMember.child instanceof MenuScene)) {
+						familyMember.child.setChildScene(mLoadingScene.getScene(), mChildSceneModalDraw, mChildSceneModalUpdate, mChildSceneModalTouch);
+					} else {
+						Log.w(getClass().getSimpleName(), "Loading... scene could not be shown- parent is menu scene!");
+					}
 				}
 			break;
 		default:
@@ -465,12 +486,35 @@ public class SceneLoader {
 						if (splash.isComplete()) {
 							splash.waitForCompleted();
 							setupScene();
+							printScenesStack(mEngine.get().getScene());
 						}
 					}
 				});
 			} else {
-				Log.d(getClass().getSimpleName(), "Scene loaded");
+				Log.d(getClass().getSimpleName(), "Scene loaded !!!");
 				setupScene();
+				printScenesStack(mEngine.get().getScene());
+			}
+		}
+
+		private void printScenesStack(Scene pScene) {
+			SceneFamily familyMember = new SceneFamily(pScene, pScene);
+
+			String offset = "";
+			while (familyMember.child.getChildScene() != null) {
+				familyMember.parent = familyMember.child;
+				familyMember.child = familyMember.parent.getChildScene();
+				Log.d(getClass().getSimpleName(), offset + sceneToString(familyMember.parent) + "   (has a child: " + sceneToString(familyMember.child) + ")");
+				offset += " ";
+			}
+			Log.d(getClass().getSimpleName(), offset + sceneToString(familyMember.child) + "   (no child)");
+		}
+
+		private String sceneToString(Scene pScene) {
+			if (null != pScene) {
+				return pScene.getClass().getSimpleName();
+			} else {
+				return "none";
 			}
 		}
 
@@ -485,11 +529,10 @@ public class SceneLoader {
 			mSetupHandler.unloadOldScene(mOldScene);
 
 			if (mListener != null) {
-				Log.d(getClass().getSimpleName(), "Queued listener");
 				mLoadedScene.postRunnable(new Runnable() {
 					@Override
 					public void run() {
-						Log.d(getClass().getSimpleName(), "Calling listener");
+						Log.d(getClass().getSimpleName(), "calling onSceneLoaded()");
 						mListener.onSceneLoaded(mLoadedScene);
 					}
 				});
@@ -507,7 +550,7 @@ public class SceneLoader {
 	 * @param pBaseScene
 	 * @return youngest child of given pBaseScene; pBaseScene if no children were found
 	 */
-	protected SceneFamily findYoungestChild(Scene pBaseScene) {
+	protected static SceneFamily findYoungestChild(Scene pBaseScene) {
 		// find the youngest child
 		SceneFamily ret = new SceneFamily(pBaseScene, pBaseScene);
 
@@ -518,7 +561,14 @@ public class SceneLoader {
 		return ret;
 	}
 
-	final class SceneFamily {
+	public static Scene getYoungestScene(Scene pScene) {
+		while (pScene.getChildScene() != null) {
+			pScene = pScene.getChildScene();
+		}
+		return pScene;
+	}
+
+	static class SceneFamily {
 		public Scene parent;
 		public Scene child;
 		public SceneFamily(Scene parent, Scene child) {
