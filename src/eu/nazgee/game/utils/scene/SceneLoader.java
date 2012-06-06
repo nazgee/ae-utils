@@ -46,7 +46,6 @@ public class SceneLoader {
 	private boolean mChildSceneModalDraw = true;
 	private boolean mChildSceneModalTouch = true;
 
-
 	/**
 	 *
 	 * @param pLoadingLoader "Loading..." scene to be used with this SceneLoader
@@ -376,7 +375,7 @@ public class SceneLoader {
 				if (scene != null) {
 					SceneFamily familyMember = findYoungestChild(scene);
 					if (!(familyMember.child instanceof MenuScene)) {
-						familyMember.child.setChildScene(mLoadingScene.getScene(), mChildSceneModalDraw, mChildSceneModalUpdate, mChildSceneModalTouch);
+						familyMember.child.setChildScene(mLoadingScene.getScene(), false, false, true);
 					} else {
 						Log.w(getClass().getSimpleName(), "Loading... scene could not be shown- parent is menu scene!");
 					}

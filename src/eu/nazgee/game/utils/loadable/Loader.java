@@ -60,12 +60,11 @@ public class Loader implements ILoadable {
 			assertLoaded(false);
 			synchronized (mResources) {
 				for (ILoadable res : mResources) {
-					Log.d(getClass().getSimpleName(), "About to load() " + res.toString());
 					res.load(e, c);
 				}
 			}
 			if (getLoadingHandler() != null) {
-				Log.d(getClass().getSimpleName(), "About to onLoad() " + getLoadingHandler().toString());
+				Log.d(getClass().getSimpleName(), "loading... " + getLoadingHandler().getClass().getSimpleName());
 				getLoadingHandler().onLoad(e, c);
 			}
 			setLoaded(true);
@@ -76,13 +75,12 @@ public class Loader implements ILoadable {
 		synchronized (mLoaded) {
 			assertLoaded(true);
 			if (getLoadingHandler() != null) {
-				Log.d(getClass().getSimpleName(), "About to onUnload() " + getLoadingHandler().toString());
+				Log.d(getClass().getSimpleName(), "...unloading " + getLoadingHandler().getClass().getSimpleName());
 				getLoadingHandler().onUnload();
 			}
 			synchronized (mResources) {
 				Reversed<ILoadable> rev = new Reversed<ILoadable>(mResources);
 				for (ILoadable res : rev) {
-					Log.d(getClass().getSimpleName(), "About to unload()" + res.toString());
 					res.unload();
 				}
 			}

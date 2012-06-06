@@ -50,12 +50,11 @@ public class LoaderResource extends Loader implements ILoadableResource {
 		if (!isResourceLoaded()) {
 			synchronized (mResources) {
 				for (ILoadable res : mResources) {
-					Log.d(getClass().getSimpleName(), "About to loadResources()" + res.toString());
 					((ILoadableResource)res).loadResources(e, c);
 				}
 			}
 			if (getLoadingHandler() != null) {
-				Log.d(getClass().getSimpleName(), "About to onLoadResources()" + getLoadingHandler().toString());
+				Log.d(getClass().getSimpleName(), "loading resources... " + getLoadingHandler().getClass().getSimpleName());
 				getLoadingHandler().onLoadResources(e, c);
 			}
 			setResourceLoaded(true);
