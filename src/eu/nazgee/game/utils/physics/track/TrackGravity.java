@@ -1,4 +1,4 @@
-package eu.nazgee.game.utils.track.physics;
+package eu.nazgee.game.utils.physics.track;
 
 import org.andengine.extension.physics.box2d.PhysicsWorld;
 

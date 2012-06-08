@@ -11,11 +11,10 @@ import org.andengine.entity.scene.menu.MenuScene;
 
 import android.app.Activity;
 import android.content.Context;
+import android.os.AsyncTask;
 import android.util.Log;
 import eu.nazgee.game.utils.loadable.ILoadableResourceScene;
 import eu.nazgee.game.utils.misc.Reversed;
-import eu.nazgee.game.utils.tasklet.IAsyncTasklet;
-import eu.nazgee.game.utils.tasklet.TaskletsRunner;
 
 public class SceneLoader {
 	public enum eLoadingSceneHandling {
@@ -261,10 +260,10 @@ public class SceneLoader {
 	 * when the same "Loading..." scene is small (resource-wise), but used many
 	 * times- in this case loading/unloading might be considered as a waste of time
 	 */
-	private void loadScene(final ILoadableResourceScene pScene, final eNewSceneHandling sceneHandling, final Engine e, final Context c, ISceneLoaderListener pListener, eLoadingSceneHandling pLoadingSceneHandling, boolean pUnloadLoadingScene) {
+	private void loadScene(final ILoadableResourceScene pScene, final eNewSceneHandling pSceneHandlingPolicy, final Engine e, final Context c, ISceneLoaderListener pListener, eLoadingSceneHandling pLoadingSceneHandling, boolean pUnloadLoadingScene) {
 		Scene oldScene = e.getScene();
 
-		switch (sceneHandling) {
+		switch (pSceneHandlingPolicy) {
 		case SCENE_SET_ACTIVE:
 			if (	mOldSceneHandling == eOldSceneHandling.UNLOAD_OLD_BEFORE_LOADING_NEW) {
 				unloadIfNotSplashscreen(oldScene);
@@ -284,9 +283,26 @@ public class SceneLoader {
 
 		prepareForLoading(e, c, pLoadingSceneHandling);
 
+		if (c instanceof Activity) {
+			Activity act = (Activity) c;
+
+			Runnable r = new SceneLoadingRunnable(pSceneHandlingPolicy, e, c, pListener, mUnloadLoadingScene, oldScene, pScene);
+			act.runOnUiThread(r);
+		} else {
+			Log.w(getClass().getSimpleName(), "this might be risky- not calling execute from UI thread!");
+
+			Runnable r = new SceneLoadingRunnable(pSceneHandlingPolicy, e, c, pListener, mUnloadLoadingScene, oldScene, pScene);
+			r.run();
+		}
+	}
+
+	private SceneLoadingTask prepareSceneLoadingTask(
+			final eNewSceneHandling sceneHandling, final Engine e,
+			final Context c, ISceneLoaderListener pListener,
+			boolean pUnloadLoadingScene, Scene oldScene) {
 		// Start loading process in the background
-		final SceneLoaderTasklet loader = new SceneLoaderTasklet(e, c, 
-				(SceneLoadable) mLoadingScene.getScene(), pScene, pListener, 
+		final SceneLoadingTask loader = new SceneLoadingTask(e, c,
+				(SceneLoadable) mLoadingScene.getScene(), pListener,
 				pUnloadLoadingScene, oldScene, new SetupHandler() {
 			@Override
 			public void setupScene(Engine e, Scene pNewScene, Scene pOldScene) {
@@ -335,19 +351,7 @@ public class SceneLoader {
 				}
 			}
 		});
-
-		if (c instanceof Activity) {
-			Activity act = (Activity) c;
-			act.runOnUiThread(new Runnable() {
-				@Override
-				public void run() {
-					new TaskletsRunner(loader).execute(loader);
-				}
-			});
-		} else {
-			Log.w(getClass().getSimpleName(), "this might be risky- not calling execute from UI thread!");
-			new TaskletsRunner(loader).execute(loader);
-		}
+		return loader;
 	}
 
 	private void prepareForLoading(final Engine e, final Context c,
@@ -419,16 +423,43 @@ public class SceneLoader {
 		void onSceneLoaded(Scene pScene);
 	}
 
+	class SceneLoadingRunnable implements Runnable {
+		final eNewSceneHandling mSceneHandling;
+		final Engine mEngine;
+		final Context mContext;
+		final ISceneLoaderListener mListener;
+		final boolean mUnloadLoadingScene;
+		final Scene mOldScene;
+		final ILoadableResourceScene mScene;
+
+		public SceneLoadingRunnable(final eNewSceneHandling pSceneHandling, final Engine pEngine,
+				final Context pContext, final ISceneLoaderListener pListener,
+				boolean pUnloadLoadingScene, final Scene pOldScene, final ILoadableResourceScene pScene) {
+			super();
+			this.mSceneHandling = pSceneHandling;
+			this.mEngine = pEngine;
+			this.mContext = pContext;
+			this.mListener = pListener;
+			this.mUnloadLoadingScene = pUnloadLoadingScene;
+			this.mOldScene = pOldScene;
+			this.mScene = pScene;
+		}
+
+		@Override
+		public void run() {
+			prepareSceneLoadingTask(mSceneHandling, mEngine, mContext, mListener, mUnloadLoadingScene, mOldScene).execute(mScene);
+		}
+	}
+
 	/*
 	 * Here's where the assets are loaded in the background behind the loading scene.
 	 */
-	private class SceneLoaderTasklet implements IAsyncTasklet {
+	private class SceneLoadingTask extends AsyncTask<ILoadableResourceScene, Integer, Boolean> {
 		WeakReference<Engine> mEngine; 
 		WeakReference<Context> mContext;
 
 		private final ISceneLoaderListener mListener;
 		private final SceneLoadable mPleaseWaitScene;
-		private final ILoadableResourceScene mLoaderToBeLoaded;
 		private volatile Scene mLoadedScene;
 		private final boolean mUnloadPleaseWaitScene;
 		private final Scene mOldScene;
@@ -439,11 +470,10 @@ public class SceneLoader {
 		 * @param e
 		 * @param c
 		 * @param pPleaseWaitScene will be unloaded, after pToBeLoaded will be loaded
-		 * @param pToBeLoaded scene that should be loaded
 		 * @param pUnloadPleaseWaitScene if true, pPleaseWaitScene will be unloaded after pToBeLoaded is loaded
 		 */
-		public SceneLoaderTasklet(final Engine e, final Context c,
-				SceneLoadable pPleaseWaitScene, ILoadableResourceScene pToBeLoaded,
+		public SceneLoadingTask(final Engine e, final Context c,
+				SceneLoadable pPleaseWaitScene,
 				ISceneLoaderListener pListener,
 				boolean pUnloadPleaseWaitScene,
 				final Scene pOldScene,
@@ -453,25 +483,19 @@ public class SceneLoader {
 
 			mListener = pListener;
 			mPleaseWaitScene = pPleaseWaitScene;
-			mLoaderToBeLoaded = pToBeLoaded;
 			mUnloadPleaseWaitScene = pUnloadPleaseWaitScene;
 			mOldScene = pOldScene;
 			mSetupHandler = pSetupHandler;
 		}
 
 		@Override
-		public void onAboutToStart() {
-			// mEngine.get().setScene(mPleaseWaitScene);
-		}
+		protected Boolean doInBackground(ILoadableResourceScene... params) {
+			for (ILoadableResourceScene toBeLoaded : params) {
+				toBeLoaded.loadResources(mEngine.get(), mContext.get());
+				toBeLoaded.load(mEngine.get(), mContext.get());
+				this.mLoadedScene = toBeLoaded.getScene();
+			}
 
-		@Override
-		public void workToDo() {
-			mLoaderToBeLoaded.loadResources(mEngine.get(), mContext.get());
-			mLoaderToBeLoaded.load(mEngine.get(), mContext.get());
-			mLoadedScene = mLoaderToBeLoaded.getScene();
-		}
-		@Override
-		public void onComplete() {
 			if (mPleaseWaitScene instanceof SceneSplash) {
 				Log.d(getClass().getSimpleName(), "SceneSplash loaded, waiting for end");
 				final SceneSplash splash = (SceneSplash) mPleaseWaitScene;
@@ -494,6 +518,8 @@ public class SceneLoader {
 				setupScene();
 				printScenesStack(mEngine.get().getScene());
 			}
+
+			return new Boolean(true);
 		}
 
 		private void printScenesStack(Scene pScene) {
