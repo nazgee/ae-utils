@@ -5,9 +5,11 @@ import javax.microedition.khronos.opengles.GL10;
 import org.andengine.engine.Engine;
 import org.andengine.engine.camera.Camera;
 import org.andengine.entity.scene.menu.item.IMenuItem;
+import org.andengine.entity.scene.menu.item.SpriteMenuItem;
 import org.andengine.entity.scene.menu.item.TextMenuItem;
 import org.andengine.entity.scene.menu.item.decorator.ColorMenuItemDecorator;
 import org.andengine.opengl.font.Font;
+import org.andengine.opengl.texture.region.ITextureRegion;
 import org.andengine.opengl.vbo.VertexBufferObjectManager;
 import org.andengine.util.color.Color;
 
@@ -32,6 +34,15 @@ abstract public class SceneMenu extends MenuLoadable {
 	public IMenuItem addMenuEntry(String pText, int pVal, final Color pSelected, final Color pUnselected, VertexBufferObjectManager pVBOM) {
 		final IMenuItem menuItem = new ColorMenuItemDecorator(
 				new TextMenuItem(pVal, getFont(), pText, pVBOM), pSelected, pUnselected);
+		menuItem.setBlendFunction(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA);
+		addMenuItem(menuItem);
+		return menuItem;
+	}
+
+	public IMenuItem addMenuEntry(float w, float h, ITextureRegion pTextureRegion, int pID, Color pSelected,
+			Color pUnselected, VertexBufferObjectManager pVBOM) {
+		final IMenuItem menuItem = new ColorMenuItemDecorator(
+				new SpriteMenuItem(pID, w, h, pTextureRegion, pVBOM), pSelected, pUnselected);
 		menuItem.setBlendFunction(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA);
 		addMenuItem(menuItem);
 		return menuItem;
