@@ -48,6 +48,15 @@ abstract public class SceneMenu extends MenuLoadable {
 		return menuItem;
 	}
 
+	public IMenuItem addMenuEntry(ITextureRegion pTextureRegion, int pID, Color pSelected,
+			Color pUnselected, VertexBufferObjectManager pVBOM) {
+		final IMenuItem menuItem = new ColorMenuItemDecorator(
+				new SpriteMenuItem(pID, pTextureRegion, pVBOM), pSelected, pUnselected);
+		menuItem.setBlendFunction(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA);
+		addMenuItem(menuItem);
+		return menuItem;
+	}
+
 	@Override
 	public void onLoad(Engine e, Context c) {
 		buildAnimations();
