@@ -1,7 +1,7 @@
 package eu.nazgee.game.utils.primitives;
 
 import org.andengine.engine.camera.Camera;
-import org.andengine.entity.shape.RectangularShape;
+import org.andengine.entity.shape.Shape;
 import org.andengine.opengl.shader.PositionColorShaderProgram;
 import org.andengine.opengl.shader.constants.ShaderProgramConstants;
 import org.andengine.opengl.util.GLState;
@@ -11,12 +11,12 @@ import org.andengine.opengl.vbo.IVertexBufferObject;
 import org.andengine.opengl.vbo.VertexBufferObjectManager;
 import org.andengine.opengl.vbo.attribute.VertexBufferObjectAttributes;
 import org.andengine.opengl.vbo.attribute.VertexBufferObjectAttributesBuilder;
-import org.andengine.util.color.Color;
+import org.andengine.util.adt.color.Color;
 
 import android.opengl.GLES20;
 import android.util.Log;
 
-public class Grid extends RectangularShape {
+public class Grid extends Shape {
 	// ===========================================================
 	// Constants
 	// ===========================================================

@@ -11,7 +11,7 @@ import org.andengine.entity.scene.menu.item.decorator.ColorMenuItemDecorator;
 import org.andengine.opengl.font.Font;
 import org.andengine.opengl.texture.region.ITextureRegion;
 import org.andengine.opengl.vbo.VertexBufferObjectManager;
-import org.andengine.util.color.Color;
+import org.andengine.util.adt.color.Color;
 
 import android.content.Context;
 

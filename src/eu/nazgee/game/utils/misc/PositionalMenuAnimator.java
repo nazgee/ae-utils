@@ -2,10 +2,10 @@ package eu.nazgee.game.utils.misc;
 
 import java.util.ArrayList;
 
-import org.andengine.entity.scene.menu.animator.AlphaMenuAnimator;
+import org.andengine.entity.scene.menu.animator.AlphaMenuSceneAnimator;
 import org.andengine.entity.scene.menu.item.IMenuItem;
 
-public class PositionalMenuAnimator extends AlphaMenuAnimator {
+public class PositionalMenuAnimator extends AlphaMenuSceneAnimator {
 
 	/**
 	 * Sets the menu buttons vertically downward starting at position 0,0
@@ -25,17 +25,6 @@ public class PositionalMenuAnimator extends AlphaMenuAnimator {
 		this._baseY = pY;
 	}
 
-	/**
-	 * Sets the menu buttons vertically downward starting at a set pX,pY with a
-	 * set line spacing
-	 */
-	public PositionalMenuAnimator(final float pX, final float pY,
-			final float pLineSpacing) {
-		super(pLineSpacing);
-		this._baseX = pX;
-		this._baseY = pY;
-	}
-
 	// ===========================================================
 	// Fields
 	// ===========================================================
@@ -47,28 +36,28 @@ public class PositionalMenuAnimator extends AlphaMenuAnimator {
 	// Inherited Methods
 	// ===========================================================
 
-	@Override
-	public void prepareAnimations(ArrayList<IMenuItem> pMenuItems,
-			float pCameraWidth, float pCameraHeight) {
-		super.prepareAnimations(pMenuItems, pCameraWidth, pCameraHeight);
-	}
-
-	@Override
-	public void buildAnimations(ArrayList<IMenuItem> pMenuItems,
-			float pCameraWidth, float pCameraHeight) {
-		super.buildAnimations(pMenuItems, pCameraWidth, pCameraHeight);
-
-		float offsetX = _baseX;
-		float offsetY = _baseY;
-
-		final int menuItemCount = pMenuItems.size();
-		for (int i = 0; i < menuItemCount; i++) {
-			final IMenuItem menuItem = pMenuItems.get(i);
-
-			menuItem.setPosition(offsetX - menuItem.getWidth() / 2, offsetY);
-
-			offsetY += menuItem.getHeight() + this.mMenuItemSpacing;
-		}
-
-	}
+//	@Override
+//	public void prepareAnimations(ArrayList<IMenuItem> pMenuItems,
+//			float pCameraWidth, float pCameraHeight) {
+//		super.prepareAnimations(pMenuItems, pCameraWidth, pCameraHeight);
+//	}
+//
+//	@Override
+//	public void buildAnimations(ArrayList<IMenuItem> pMenuItems,
+//			float pCameraWidth, float pCameraHeight) {
+//		super.buildAnimations(pMenuItems, pCameraWidth, pCameraHeight);
+//
+//		float offsetX = _baseX;
+//		float offsetY = _baseY;
+//
+//		final int menuItemCount = pMenuItems.size();
+//		for (int i = 0; i < menuItemCount; i++) {
+//			final IMenuItem menuItem = pMenuItems.get(i);
+//
+//			menuItem.setPosition(offsetX - menuItem.getWidth() / 2, offsetY);
+//
+//			offsetY += menuItem.getHeight() + this.mMenuItemSpacing;
+//		}
+//
+//	}
 }

@@ -4,9 +4,9 @@
 package eu.nazgee.game.utils.debugdraw;
 
 import org.andengine.engine.camera.Camera;
+import org.andengine.entity.IEntity;
 import org.andengine.entity.primitive.Line;
 import org.andengine.entity.shape.IShape;
-import org.andengine.entity.shape.RectangularShape;
 import org.andengine.entity.shape.Shape;
 import org.andengine.opengl.shader.ShaderProgram;
 
@@ -74,15 +74,15 @@ public abstract class PolygonShape extends Shape {
 	@Override
 	public float[] getSceneCenterCoordinates() {
 		// TODO test this
-		return this.convertLocalToSceneCoordinates(mX, mY);
+		return this.convertLocalCoordinatesToSceneCoordinates(mX, mY);
 	}
 
 	@Override
-	public boolean collidesWith(final IShape pOtherShape) {
-		if(pOtherShape instanceof RectangularShape) {
+	public boolean collidesWith(final IEntity pOtherEntity) {
+		if(pOtherEntity instanceof Shape) {
 			// TODO
 			return false;
-		} else if(pOtherShape instanceof Line) {
+		} else if(pOtherEntity instanceof Line) {
 			// TODO
 			return false;
 		} else {

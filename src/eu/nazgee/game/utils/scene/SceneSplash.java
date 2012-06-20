@@ -18,7 +18,7 @@ import org.andengine.entity.text.Text;
 import org.andengine.input.touch.TouchEvent;
 import org.andengine.opengl.font.Font;
 import org.andengine.opengl.vbo.VertexBufferObjectManager;
-import org.andengine.util.color.Color;
+import org.andengine.util.adt.color.Color;
 import org.andengine.util.modifier.IModifier;
 import org.andengine.util.modifier.ease.EaseExponentialIn;
 import org.andengine.util.modifier.ease.EaseExponentialOut;
