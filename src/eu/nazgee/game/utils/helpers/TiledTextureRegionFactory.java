@@ -1,11 +1,16 @@
 package eu.nazgee.game.utils.helpers;
 
 import java.io.IOException;
+import java.io.InputStream;
 
 import org.andengine.extension.svg.opengl.texture.atlas.bitmap.SVGBitmapTextureAtlasTextureRegionFactory;
+import org.andengine.opengl.texture.TextureManager;
+import org.andengine.opengl.texture.TextureOptions;
 import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlasTextureRegionFactory;
 import org.andengine.opengl.texture.atlas.bitmap.BuildableBitmapTextureAtlas;
+import org.andengine.opengl.texture.compressed.etc1.ETC1Texture;
 import org.andengine.opengl.texture.region.ITextureRegion;
+import org.andengine.opengl.texture.region.TextureRegionFactory;
 import org.andengine.opengl.texture.region.TiledTextureRegion;
 
 import android.content.Context;
@@ -24,7 +29,9 @@ public class TiledTextureRegionFactory {
 	static public TiledTextureRegion loadTiles(Context ctx, String pBasePath, String pPath, BuildableBitmapTextureAtlas pAtlas) {
 		return loadTiles(ctx, pBasePath, pPath, pAtlas, 0, 0);
 	}
-
+	static public ITextureRegion[] loadETC1(Context ctx, final TextureManager pTextureManager, String pBasePath, String pPath) {
+		return loadTexturesETC1(ctx, pTextureManager, pBasePath, pPath, 0, 0);
+	}
 	/**
 	 * Loads all assets from a given directory, and returns them as TiledTextureRegion
 	 * 
@@ -85,6 +92,59 @@ public class TiledTextureRegionFactory {
 		}
 
 		return new TiledTextureRegion(pAtlas, arr);
+	}
+
+	static public ITextureRegion[] loadTexturesETC1(Context ctx, final TextureManager pTextureManager, String pBasePath, String pPath, int pSkip, int pLoad) {
+		ITextureRegion arr[] = null;
+
+		try {
+			String[] files = ctx.getAssets().list(pBasePath + pPath);
+			if (pLoad > 0) {
+				arr = new ITextureRegion[Math.min(files.length - pSkip, pLoad)];
+			} else {
+				arr = new ITextureRegion[files.length - pSkip];
+			}
+			int i = 0;
+			for (String file : files) {
+				file = pPath + "/" + file;
+
+				if (pSkip > 0) {
+					pSkip--;
+					Log.d("loadAssets", "Skipping " + file);
+					continue;
+				}
+
+				Log.d("loadAssets", "Loading " + file);
+				ITextureRegion tex = getETC1(ctx, pTextureManager, pBasePath + file);
+				arr[i] = tex;
+				i++;
+
+				if (pLoad>0 && i>=pLoad) {
+					break;
+				}
+			}
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
+
+		return arr;
+	}
+
+	static public ITextureRegion getETC1(final Context ctx, final TextureManager pTextureManager, final String pFile) {
+		try {
+			ETC1Texture texture = new ETC1Texture(pTextureManager, TextureOptions.BILINEAR) {
+				@Override
+				protected InputStream getInputStream() throws IOException {
+					return ctx.getAssets().open(pFile);
+				}
+			};
+			texture.load();
+
+			return TextureRegionFactory.extractFromTexture(texture, 0, 0, texture.getWidth(), texture.getHeight());
+
+		} catch (final Throwable e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	/**
